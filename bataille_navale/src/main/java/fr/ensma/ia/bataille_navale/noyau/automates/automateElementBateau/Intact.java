@@ -5,7 +5,7 @@ import fr.ensma.ia.bataille_navale.noyau.element.ElementBateau;
 
 public class Intact extends AbsEtat {
 
-	protected Intact(ElementBateau eBateau) {
+	public Intact(ElementBateau eBateau) {
 		super(eBateau);
 	}
 	

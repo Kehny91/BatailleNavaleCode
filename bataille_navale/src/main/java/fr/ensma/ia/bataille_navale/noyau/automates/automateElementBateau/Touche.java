@@ -5,7 +5,7 @@ import fr.ensma.ia.bataille_navale.noyau.element.ElementBateau;
 
 public class Touche extends AbsEtat {
 
-	protected Touche(ElementBateau eBateau) {
+	public Touche(ElementBateau eBateau) {
 		super(eBateau);
 	}
 	

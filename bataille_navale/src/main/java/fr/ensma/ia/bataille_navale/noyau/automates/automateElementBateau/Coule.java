@@ -5,7 +5,7 @@ import fr.ensma.ia.bataille_navale.noyau.element.ElementBateau;
 
 public class Coule extends AbsEtat {
 
-	protected Coule(ElementBateau eBateau) {
+	public Coule(ElementBateau eBateau) {
 		super(eBateau);
 	}
 	

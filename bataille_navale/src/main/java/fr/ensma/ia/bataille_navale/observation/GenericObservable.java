@@ -2,6 +2,10 @@ package fr.ensma.ia.bataille_navale.observation;
 
 import java.util.ArrayList;
 
+
+/*
+ * Parce que j'en avais marre de réécrire ces meme lignes 300 fois
+ */
 public class GenericObservable implements IObservable{
 	private ArrayList<IObservateur> observateurs;
 	

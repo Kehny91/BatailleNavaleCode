@@ -66,8 +66,11 @@ public abstract class JoueurAbstrait implements IJoueur{
 	}
 
 	@Override
-	public abstract void initialiserGrille();
-	//L'initialisation de la grille dépend de si l'on est un joueur ou un bot
+	public void initialiserGrille(int largeur, int hauteur)
+	{
+		myGrid = new Grille(largeur,hauteur);
+		//A compléter dans les classes filles
+	}
 
 	@Override
 	public List<IAction> getActionDispo() {

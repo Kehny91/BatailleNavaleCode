@@ -2,6 +2,8 @@ package fr.ensma.ia.bataille_navale.noyau.jeu;
 
 import java.util.ArrayList;
 
+import fr.ensma.ia.bataille_navale.ExceptionBadInput;
+
 public class Grille {
 	private int largeur;
 	private int hauteur;
@@ -14,13 +16,26 @@ public class Grille {
 		grille = new Case[largeur][hauteur];
 		for (int x = 0 ; x<largeur ; x++){
 			for (int y = 0 ; y<hauteur ; y++){
-				grille[y][x] = new Case(x,y);
+				grille[y][x] = new Case(x,y,this);
 			}
 		}
 	}
 	
-	public Case getCase(int x, int y)
+	public Case getCase(int x, int y) throws ExceptionBadInput
 	{
-		return grille[y][x];
+		if (x>=largeur || x<0 || y>=hauteur || y<0)
+			throw new ExceptionBadInput();
+		else
+			return grille[y][x];
 	}
+
+	public int getLargeur() {
+		return largeur;
+	}
+
+	public int getHauteur() {
+		return hauteur;
+	}
+	
+	
 }

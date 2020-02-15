@@ -4,6 +4,6 @@ import fr.ensma.ia.bataille_navale.noyau.element.BateauAbs;
 import fr.ensma.ia.bataille_navale.noyau.jeu.Case;
 
 public interface IAsker {
-	public Case demandeUneCase();
+	public Case demandeUneCase(String string);
 	public BateauAbs demandeUnBateau();
 }

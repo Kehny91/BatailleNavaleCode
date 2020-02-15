@@ -1,0 +1,4 @@
+Une case est finalement {int,int} et non {char,int}
+Cela facilitera grandement les itérations sur la grille.
+
+Nous ferons la conversion {char, int} uniquement lors de l'affichage

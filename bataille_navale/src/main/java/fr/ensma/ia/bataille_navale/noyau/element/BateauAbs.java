@@ -1,5 +1,6 @@
 package fr.ensma.ia.bataille_navale.noyau.element;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import fr.ensma.ia.bataille_navale.noyau.jeu.IJoueur;
@@ -10,4 +11,63 @@ public abstract class BateauAbs {
 	protected boolean peutTirer;
 	protected IJoueur owner;
 	protected List<ElementBateau> elementsBateau;
+	
+	public BateauAbs(int nbCase, boolean peutTirer, IJoueur owner) {
+		super();
+		this.nbCase = nbCase;
+		this.enVie = true;
+		this.peutTirer = peutTirer;
+		this.owner = owner;
+		this.elementsBateau = new ArrayList<ElementBateau>();
+	}
+	
+	public void ajouteElementBateau(ElementBateau e){
+		if (this.elementsBateau.size() >= nbCase)
+			System.out.println("Can't add more cases");
+		else
+			elementsBateau.add(e);
+	}
+
+	public int getNbCase() {
+		return nbCase;
+	}
+
+	public void setNbCase(int nbCase) {
+		this.nbCase = nbCase;
+	}
+
+	public boolean isEnVie() {
+		return enVie;
+	}
+
+	public void setEnVie(boolean enVie) {
+		this.enVie = enVie;
+	}
+
+	public boolean isPeutTirer() {
+		return peutTirer;
+	}
+
+	public void setPeutTirer(boolean peutTirer) {
+		this.peutTirer = peutTirer;
+	}
+
+	public IJoueur getOwner() {
+		return owner;
+	}
+
+	public void setOwner(IJoueur owner) {
+		this.owner = owner;
+	}
+
+	public List<ElementBateau> getElementsBateau() {
+		return elementsBateau;
+	}
+
+	public void setElementsBateau(List<ElementBateau> elementsBateau) {
+		this.elementsBateau = elementsBateau;
+	}
+	
+	
+	
 }

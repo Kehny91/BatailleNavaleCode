@@ -2,6 +2,7 @@ package fr.ensma.ia.bataille_navale.noyau.jeu;
 
 import java.util.List;
 
+import fr.ensma.ia.bataille_navale.Parametres;
 import fr.ensma.ia.bataille_navale.noyau.actions.IAction;
 import fr.ensma.ia.bataille_navale.observation.GenericObservable;
 import fr.ensma.ia.bataille_navale.noyau.automates.automateJoueur.*;
@@ -89,7 +90,7 @@ public abstract class JoueurAbstrait implements IJoueur{
 		this.etatRealisationAction = new RealisationAction(this);
 		this.etatCourant = etatEndormi;
 		this.stateChanged = new GenericObservable();
-		initialiserGrille();
+		initialiserGrille(Parametres.largeur,Parametres.hauteur);
 	}
 	
 	

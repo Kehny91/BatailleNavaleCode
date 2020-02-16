@@ -23,13 +23,7 @@ public class PorteAvionFactory extends BateauFactory {
 		
 		EDirection direction = getDirection(caseArriere, caseDirection);
 		
-		Case check = caseArriere;
-		for (int i = 0; i < 5 ; i++)
-		{
-			if (! check.isEmpty())
-				throw new ExceptionBadInput();
-			check = check.voisin(direction);
-		}
+		checkElementBateau(caseArriere, caseDirection, 5);
 		
 		//Verification additionnelle a cause de la forme du porte avion
 		switch (direction)
@@ -64,12 +58,10 @@ public class PorteAvionFactory extends BateauFactory {
 		
 		//Les verifications ont été faites, on peut construire le bateau
 		PorteAvion out = new PorteAvion(joueur);
+		
+		buildElementBateau(caseArriere, caseDirection, out, 5);
+		
 		Case placeIci = caseArriere;
-		for (int i = 0; i < 5 ; i++)
-		{
-			placeIci.getPlacables().add(new ElementBateau(out.getNbCase(), out, placeIci));
-			placeIci = placeIci.voisin(direction);
-		}
 		
 		//Ajouts additionnels a cause de la forme du porte avion
 		switch (direction)

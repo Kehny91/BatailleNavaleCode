@@ -3,6 +3,8 @@ package fr.ensma.ia.bataille_navale.noyau.fabrique.bateau;
 import fr.ensma.ia.bataille_navale.ExceptionBadInput;
 import fr.ensma.ia.bataille_navale.ihm.IAsker;
 import fr.ensma.ia.bataille_navale.noyau.element.BateauAbs;
+import fr.ensma.ia.bataille_navale.noyau.element.ElementBateau;
+import fr.ensma.ia.bataille_navale.noyau.element.PorteAvion;
 import fr.ensma.ia.bataille_navale.noyau.jeu.Case;
 import fr.ensma.ia.bataille_navale.noyau.jeu.EDirection;
 import fr.ensma.ia.bataille_navale.noyau.jeu.IJoueur;
@@ -20,7 +22,7 @@ public abstract class BateauFactory {
 			case Plaisance:
 				return null;
 			case Porte_Avion:
-				return null;
+				return new PorteAvionFactory(asker);
 			case Sous_Marin:
 				return null;
 			case Torpilleur:
@@ -30,7 +32,9 @@ public abstract class BateauFactory {
 		}
 	}
 	
+	public abstract BateauAbs createBateau(IJoueur joueur) throws ExceptionBadInput;
 	
+	//=========== helpers ==============
 	protected EDirection getDirection(Case caseDepart, Case caseCible) throws ExceptionBadInput
 	{
 		if (caseCible.getX() == caseDepart.getX()) //Nord ou sud ?
@@ -62,9 +66,28 @@ public abstract class BateauFactory {
 		else
 			throw new ExceptionBadInput();
 	}
-
-	public BateauAbs createBateau(IJoueur joueur) throws ExceptionBadInput {
-		// TODO Auto-generated method stub
-		return null;
+	
+	protected void checkElementBateau(Case caseDepart, Case caseCible, int size) throws ExceptionBadInput
+	{
+		EDirection direction = getDirection(caseDepart, caseCible);
+		
+		Case check = caseDepart;
+		for (int i = 0; i < size ; i++){
+			if (! check.isEmpty())
+				throw new ExceptionBadInput();
+			check = check.voisin(direction);
+		}
+	}
+	
+	protected void buildElementBateau(Case caseDepart, Case caseCible, BateauAbs bateau,int size) throws ExceptionBadInput
+	{
+		EDirection direction = getDirection(caseDepart, caseCible);
+		
+		//Les verifications ont été faites, on peut construire le bateau
+		Case placeIci = caseDepart;
+		for (int i = 0; i < size ; i++){
+			placeIci.getPlacables().add(new ElementBateau(bateau.getNbCase(), bateau, placeIci));
+			placeIci = placeIci.voisin(direction);
+		}
 	}
 }

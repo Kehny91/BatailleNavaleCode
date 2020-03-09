@@ -18,8 +18,8 @@ public class PorteAvionFactory extends BateauFactory {
 
 	@Override
 	public BateauAbs createBateau(IJoueur joueur) throws ExceptionBadInput {
-		Case caseArriere = asker.demandeUneCase("Case Arrière");
-		Case caseDirection = asker.demandeUneCase("Direction");
+		Case caseArriere = asker.demandeUneCase("Case Arrière",joueur.getGrille());
+		Case caseDirection = asker.demandeUneCase("Direction",joueur.getGrille());
 		
 		EDirection direction = getDirection(caseArriere, caseDirection);
 		
@@ -53,7 +53,7 @@ public class PorteAvionFactory extends BateauFactory {
 					throw new ExceptionBadInput();
 				break;
 			default:
-				break;
+				throw new ExceptionBadInput();
 		}
 		
 		//Les verifications ont été faites, on peut construire le bateau

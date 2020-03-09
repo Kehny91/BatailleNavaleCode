@@ -13,7 +13,7 @@ public class Grille {
 	{
 		this.largeur = largeur;
 		this.hauteur = hauteur;
-		grille = new Case[largeur][hauteur];
+		grille = new Case[hauteur][largeur];
 		for (int x = 0 ; x<largeur ; x++){
 			for (int y = 0 ; y<hauteur ; y++){
 				grille[y][x] = new Case(x,y,this);

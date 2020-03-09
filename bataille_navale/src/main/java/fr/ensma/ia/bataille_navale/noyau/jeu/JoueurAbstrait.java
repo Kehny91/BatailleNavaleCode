@@ -1,15 +1,18 @@
 package fr.ensma.ia.bataille_navale.noyau.jeu;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import fr.ensma.ia.bataille_navale.Parametres;
 import fr.ensma.ia.bataille_navale.noyau.actions.IAction;
 import fr.ensma.ia.bataille_navale.observation.GenericObservable;
 import fr.ensma.ia.bataille_navale.noyau.automates.automateJoueur.*;
+import fr.ensma.ia.bataille_navale.noyau.element.BateauAbs;
 
 public abstract class JoueurAbstrait implements IJoueur{
 	//< === REFERENCES === >
 	private Grille myGrid;
+	private List<BateauAbs> bateaux;
 	
 	//< === AUTOMATE === >
 	private Endormi etatEndormi;
@@ -78,6 +81,16 @@ public abstract class JoueurAbstrait implements IJoueur{
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@Override
+	public void ajouteBateau(BateauAbs bateau) {
+		bateaux.add(bateau);
+	}
+	
+	public Grille getGrille()
+	{
+		return myGrid;
+	}
 
 	public JoueurAbstrait() {
 		super();
@@ -90,6 +103,7 @@ public abstract class JoueurAbstrait implements IJoueur{
 		this.etatRealisationAction = new RealisationAction(this);
 		this.etatCourant = etatEndormi;
 		this.stateChanged = new GenericObservable();
+		this.bateaux = new ArrayList<BateauAbs>();
 		initialiserGrille(Parametres.largeur,Parametres.hauteur);
 	}
 	

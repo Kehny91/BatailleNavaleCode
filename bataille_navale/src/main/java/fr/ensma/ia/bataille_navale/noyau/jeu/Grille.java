@@ -1,6 +1,7 @@
 package fr.ensma.ia.bataille_navale.noyau.jeu;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import fr.ensma.ia.bataille_navale.ExceptionBadInput;
 
@@ -36,6 +37,13 @@ public class Grille {
 	public int getHauteur() {
 		return hauteur;
 	}
+
+	@Override
+	public String toString() {
+		return "Grille [largeur=" + largeur + ", hauteur=" + hauteur + ", grille=" + Arrays.toString(grille) + "]";
+	}
+	
+	
 	
 	
 }

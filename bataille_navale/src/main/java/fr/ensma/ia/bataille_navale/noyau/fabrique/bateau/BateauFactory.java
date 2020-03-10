@@ -86,6 +86,7 @@ public abstract class BateauFactory {
 		//Les verifications ont été faites, on peut construire le bateau
 		Case placeIci = caseDepart;
 		for (int i = 0; i < size ; i++){
+			//System.out.println("Je place en " + placeIci.getX() + " y " + placeIci.getY() + " caseN " + placeIci.hashCode());
 			placeIci.getPlacables().add(new ElementBateau(bateau.getNbCase(), bateau, placeIci));
 			placeIci = placeIci.voisin(direction);
 		}

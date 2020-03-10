@@ -18,7 +18,7 @@ public class ElementBateau implements IGestionEtat, IPlacable{
 	
 	public GenericObservable etatChanged;
 	
-	
+	//Se rajoute aux elements bateau du bateau en question
 	public ElementBateau(int niveauDef, BateauAbs bateauAbs, Case caseImOn) {
 		this.niveauDef = niveauDef;
 		this.bateauAbs = bateauAbs;
@@ -32,6 +32,8 @@ public class ElementBateau implements IGestionEtat, IPlacable{
 		this.lastEtat = this.etatIntact;
 		
 		etatChanged = new GenericObservable();
+		bateauAbs.ajouteElementBateau(this);
+		//System.out.println("Nouvel element en "+ caseImOn.getX() +" "+caseImOn.getY());
 	}
 	
 	

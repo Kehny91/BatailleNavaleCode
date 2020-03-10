@@ -87,6 +87,11 @@ public abstract class JoueurAbstrait implements IJoueur{
 		bateaux.add(bateau);
 	}
 	
+	@Override
+	public List<BateauAbs> getBateaux() {
+		return bateaux;
+	}
+	
 	public Grille getGrille()
 	{
 		return myGrid;

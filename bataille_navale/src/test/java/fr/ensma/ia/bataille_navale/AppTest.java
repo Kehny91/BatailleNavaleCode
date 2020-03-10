@@ -23,9 +23,7 @@ public class AppTest
     @Test
     public void shouldAnswerWithTrue()
     {
-    	Grille grille = new Grille(20,20);
     	ConsoleAsker consol = new ConsoleAsker();
-    	consol.demandeUneCase("File un bateau", grille);
         assertTrue( true );
         
         IJoueur joueur = new JoueurHumain();
@@ -37,5 +35,20 @@ public class AppTest
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+        for (int y=Parametres.hauteur-1;y>=0;y--)
+        {
+        	for (int x=0;x<Parametres.largeur;x++)
+        	{
+        		try {
+					System.out.print(joueur.getGrille().getCase(x,y).getPlacables().size());
+				} catch (ExceptionBadInput e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+        	}
+        	System.out.println("");
+        }
+        
+        System.out.println(joueur.getBateaux().get(0).getElementsBateau().toString());
     }
 }

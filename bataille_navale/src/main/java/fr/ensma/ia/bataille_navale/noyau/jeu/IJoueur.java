@@ -11,4 +11,5 @@ public interface IJoueur extends IGestionEtat{
 	void initialiserGrille(int largeur, int hauteur);
 	void ajouteBateau(BateauAbs bateau);
 	Grille getGrille();
+	List<BateauAbs> getBateaux();
 }

@@ -9,6 +9,7 @@ import fr.ensma.ia.bataille_navale.observation.GenericObservable;
  * Element Bateau peut permettre aux autres composants d'observer si son etatChange
  */
 public class ElementBateau implements IGestionEtat, IPlacable{
+	private int niveauDef0;
 	private int niveauDef;
 	private IEtat etatCoule,etatIntact,etatTouche;
 	private IEtat etatCourant;
@@ -18,9 +19,11 @@ public class ElementBateau implements IGestionEtat, IPlacable{
 	
 	public GenericObservable etatChanged;
 	
+	
 	//Se rajoute aux elements bateau du bateau en question
-	public ElementBateau(int niveauDef, BateauAbs bateauAbs, Case caseImOn) {
-		this.niveauDef = niveauDef;
+	public ElementBateau(int niveauDef0, BateauAbs bateauAbs, Case caseImOn) {
+		this.niveauDef0 = niveauDef0;
+		this.niveauDef = niveauDef0;
 		this.bateauAbs = bateauAbs;
 		this.caseImOn = caseImOn;
 		
@@ -40,9 +43,18 @@ public class ElementBateau implements IGestionEtat, IPlacable{
 	public int getNiveauDef() {
 		return niveauDef;
 	}
+	
+	public int getNiveauDef0() {
+		return niveauDef0;
+	}
 
 	public void setNiveauDef(int niveauDef) {
 		this.niveauDef = niveauDef;
+	}
+	
+	public BateauAbs getBateauAbs()
+	{
+		return bateauAbs;
 	}
 
 	@Override

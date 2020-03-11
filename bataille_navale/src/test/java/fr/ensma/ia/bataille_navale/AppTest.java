@@ -32,8 +32,7 @@ public class AppTest
         try {
 			bF.createBateau(joueur);
 		} catch (ExceptionBadInput e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Couldn't create the ship");
 		}
         for (int y=Parametres.hauteur-1;y>=0;y--)
         {

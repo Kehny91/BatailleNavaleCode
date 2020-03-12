@@ -17,11 +17,14 @@ public class PresenterCase {
 		//TODO sachant qu'il faut recoller avec un IAsker
 	}
 	
-	public void updateView(boolean iAmTheOwner)
+	public void updateView(IJoueur forUser)
 	{
-		if (iAmTheOwner)
+		vue.clean();
+		if (model.getHasAShip() && (model.getOwner()==forUser || model.getVisibleByEnnemyForNTours()>0)) //Il y a un bateau a afficher
 		{
-			//if (model.)
+			vue.blitBateau(model.getIniDef());
+			if (model.getDef()<model.getIniDef())
+				vue.blitTouche(model.getDef());
 		}
 	}
 	

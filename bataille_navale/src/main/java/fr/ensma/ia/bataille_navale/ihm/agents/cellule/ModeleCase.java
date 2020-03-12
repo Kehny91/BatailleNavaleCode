@@ -13,7 +13,7 @@ public class ModeleCase {
 	private int visibleByEnnemyForNTours;
 	private IJoueur owner;
 	
-	public boolean isHasAShip() {
+	public boolean getHasAShip() {
 		return hasAShip;
 	}
 	public void setHasAShip(boolean hasAShip) {
@@ -31,7 +31,7 @@ public class ModeleCase {
 	public void setDef(int def) {
 		this.def = def;
 	}
-	public boolean isHasBeenShotByOwner() {
+	public boolean getHasBeenShotByOwner() {
 		return hasBeenShotByOwner;
 	}
 	public void setHasBeenShotByOwner(boolean hasBeenShotByOwner) {

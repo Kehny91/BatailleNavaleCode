@@ -1,10 +1,6 @@
 package fr.ensma.ia.bataille_navale.ihm.agents.cellule;
 
-import fr.ensma.ia.bataille_navale.noyau.element.ElementBateau;
-import fr.ensma.ia.bataille_navale.noyau.jeu.Case;
 import fr.ensma.ia.bataille_navale.noyau.jeu.IJoueur;
-import fr.ensma.ia.bataille_navale.noyau.jeu.JoueurAbstrait;
-import fr.ensma.ia.bataille_navale.observation.IObservateur;
 
 public class ModeleCase {
 	private boolean hasAShip;

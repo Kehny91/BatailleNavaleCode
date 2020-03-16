@@ -14,19 +14,19 @@ public abstract class BateauFactory {
 	{
 		switch (type) {
 			case Bombe:
-				return null;
+				return new BombeFactory();
 			case Contre_Torpilleur:
-				return null;
+				return new TorpilleurFactory(asker);
 			case Croiseur:
-				return null;
+				return new CroiseurFactory(asker);
 			case Plaisance:
-				return null;
+				return new PlaisanceFactory(asker);
 			case Porte_Avion:
 				return new PorteAvionFactory(asker);
 			case Sous_Marin:
-				return null;
+				return new SousMarinFactory(asker);
 			case Torpilleur:
-				return null;
+				return new TorpilleurFactory(asker);
 			default:
 				return null;
 		}

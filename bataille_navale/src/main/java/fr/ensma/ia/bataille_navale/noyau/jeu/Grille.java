@@ -1,9 +1,10 @@
 package fr.ensma.ia.bataille_navale.noyau.jeu;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 import fr.ensma.ia.bataille_navale.ExceptionBadInput;
+import fr.ensma.ia.bataille_navale.Parametres;
 
 public class Grille {
 	private int largeur;
@@ -36,6 +37,19 @@ public class Grille {
 
 	public int getHauteur() {
 		return hauteur;
+	}
+	
+	public Case getRandomCase() {
+		Random r = new Random();
+		int x = r.nextInt(Parametres.largeur);
+		int y = r.nextInt(Parametres.hauteur);
+		try {
+			return getCase(x, y);
+		} catch (ExceptionBadInput e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	@Override

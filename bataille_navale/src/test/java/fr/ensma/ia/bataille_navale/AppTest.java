@@ -34,6 +34,14 @@ public class AppTest
 		} catch (ExceptionBadInput e) {
 			System.out.println("Couldn't create the ship");
 		}
+        
+        bF = BateauFactory.createFactory(EBateau.Torpilleur, consol);
+        try {
+			bF.createBateau(joueur);
+		} catch (ExceptionBadInput e) {
+			System.out.println("Couldn't create the ship");
+		}
+        
         for (int y=Parametres.hauteur-1;y>=0;y--)
         {
         	for (int x=0;x<Parametres.largeur;x++)

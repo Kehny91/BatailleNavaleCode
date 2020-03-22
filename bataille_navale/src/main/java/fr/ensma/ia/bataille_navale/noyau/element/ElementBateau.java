@@ -79,6 +79,11 @@ public class ElementBateau implements IGestionEtat, IPlacable{
 			etatChanged.notifyObservateurs();
 		lastEtat = etatCourant;
 	}
+	
+	@Override
+	public IEtat getEtatCourant() {
+		return etatCourant;
+	}
 
 
 	@Override

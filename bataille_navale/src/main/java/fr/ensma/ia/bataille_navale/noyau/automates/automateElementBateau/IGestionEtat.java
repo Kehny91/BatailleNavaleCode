@@ -5,4 +5,5 @@ public interface IGestionEtat {
 	IEtat getEtatIntact();
 	IEtat getEtatTouche();
 	void setEtatCourant(IEtat e);
+	IEtat getEtatCourant();
 }

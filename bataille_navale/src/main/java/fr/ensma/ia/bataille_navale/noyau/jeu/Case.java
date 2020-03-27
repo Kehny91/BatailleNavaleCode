@@ -4,12 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.ensma.ia.bataille_navale.ExceptionBadInput;
+import fr.ensma.ia.bataille_navale.ExceptionPasDeBateauIci;
+import fr.ensma.ia.bataille_navale.noyau.element.BateauAbs;
+import fr.ensma.ia.bataille_navale.noyau.element.Bombe;
+import fr.ensma.ia.bataille_navale.noyau.element.ElementBateau;
 import fr.ensma.ia.bataille_navale.noyau.element.IPlacable;
+import fr.ensma.ia.bataille_navale.observation.GenericObservable;
 
 public class Case {
 	private int x,y;
 	private List<IPlacable> placables;
 	private Grille myGrille;
+	
+	public GenericObservable somethingChanged;
 	
 	public int getX(){
 		return x;
@@ -19,10 +26,44 @@ public class Case {
 		return y;
 	}
 	
-	public List<IPlacable> getPlacables()
+	public void addPlacable(IPlacable pl)
 	{
-		return placables;
+		placables.add(pl);
+		somethingChanged.notifyObservateurs();
 	}
+	
+	public void removePlacable(IPlacable pl)
+	{
+		if (placables.remove(pl))
+			somethingChanged.notifyObservateurs();
+	}
+	
+	/*
+	 * Ne renvoie pas les bombes
+	 */
+	public ElementBateau getElementBateau() throws ExceptionPasDeBateauIci
+	{
+		if (placables.size()==0)
+			throw new ExceptionPasDeBateauIci();
+		else
+		{
+			for (IPlacable pl : placables)
+			{
+				if (pl.getClass()==ElementBateau.class && ((ElementBateau)pl).getBateauAbs().getClass()!=Bombe.class)
+				{
+					return ((ElementBateau)pl);
+				}
+			}
+			throw new ExceptionPasDeBateauIci();
+		}	
+	}
+	
+	public void onMeTireDessus()
+	{
+		//TODO
+	}
+	
+	
 	
 	public Case(int x, int y, Grille myGrille)
 	{
@@ -30,6 +71,7 @@ public class Case {
 		this.y=y;
 		this.placables = new ArrayList<IPlacable>();
 		this.myGrille = myGrille;
+		somethingChanged = new GenericObservable();
 	}
 	
 	public Grille getGrille()

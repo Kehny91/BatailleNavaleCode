@@ -21,26 +21,11 @@ public class ModeleCase {
 		nbTourVisible = 0;
 	}
 	
-	public ElementBateau getElementBateau() throws ExceptionPasDeBateauIci
-	{
-		if (cellule.getPlacables().size()==0)
-			throw new ExceptionPasDeBateauIci();
-		else {
-			for (IPlacable p : cellule.getPlacables())
-			{
-				if (p.getClass() == ElementBateau.class && ((ElementBateau)p).getBateauAbs().getClass()!=Bombe.class)
-				{
-					return ((ElementBateau)p);
-				}
-			}
-		}
-		throw new ExceptionPasDeBateauIci();
-	}
 	
 	public boolean hasAShip()
 	{
 		try {
-			getElementBateau();
+			cellule.getElementBateau();
 		} catch (ExceptionPasDeBateauIci e) {
 			return false;
 		}
@@ -51,10 +36,11 @@ public class ModeleCase {
 	{
 		ElementBateau e;
 		try {
-			e = getElementBateau();
+			e = cellule.getElementBateau();
 		} catch (ExceptionPasDeBateauIci ex) {
 			return false;
 		}
+		
 		Case voisine;
 		try {
 			voisine = e.getCase().voisin(dir);
@@ -63,25 +49,19 @@ public class ModeleCase {
 			return false;
 		}
 		
-		if (voisine.getPlacables().size()==0)
+		try {
+			ElementBateau elementVoisin = voisine.getElementBateau();
+			return elementVoisin.getBateauAbs()==e.getBateauAbs();
+		} catch (ExceptionPasDeBateauIci ex) {
 			return false;
-		else {
-			for (IPlacable p : voisine.getPlacables())
-			{
-				if (p.getClass() == ElementBateau.class && ((ElementBateau)p).getBateauAbs()==e.getBateauAbs())
-				{
-					return true;
-				}
-			}
 		}
-		return false;
 	}
 	
 	public boolean isVisible()
 	{
 		ElementBateau e;
 		try {
-			e = getElementBateau();
+			e = cellule.getElementBateau();
 		} catch (ExceptionPasDeBateauIci e1) {
 			return false;
 		}
@@ -94,7 +74,7 @@ public class ModeleCase {
 	public boolean hasBeenShot()
 	{
 		try {
-			return getElementBateau().getEtatCourant() == getElementBateau().getEtatTouche();
+			return cellule.getElementBateau().getEtatCourant() == cellule.getElementBateau().getEtatTouche();
 		} catch (ExceptionPasDeBateauIci e) {
 			return false;
 		}
@@ -103,10 +83,20 @@ public class ModeleCase {
 	public boolean isCoule()
 	{
 		try {
-			return getElementBateau().getEtatCourant() == getElementBateau().getEtatCoule();
+			return cellule.getElementBateau().getEtatCourant() == cellule.getElementBateau().getEtatCoule();
 		} catch (ExceptionPasDeBateauIci e) {
 			return false;
 		}
+	}
+	
+	public int getNiveauDef() throws ExceptionPasDeBateauIci
+	{
+		return cellule.getElementBateau().getNiveauDef();
+	}
+	
+	public int getNiveauDef0() throws ExceptionPasDeBateauIci
+	{
+		return cellule.getElementBateau().getNiveauDef0();
 	}
 	
 	public void finDeTour()

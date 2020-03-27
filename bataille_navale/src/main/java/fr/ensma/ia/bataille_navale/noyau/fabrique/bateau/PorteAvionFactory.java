@@ -68,41 +68,42 @@ public class PorteAvionFactory extends BateauFactory {
 		{
 			case Est:
 				placeIci = caseArriere.voisin(EDirection.Nord);
-				placeIci.getPlacables().add(new ElementBateau(out.getNbCase(), out, placeIci));
+				placeIci.addPlacable(new ElementBateau(out.getNbCase(), out, placeIci));
 				placeIci = caseArriere.voisin(EDirection.Nord).voisin(EDirection.Est);
-				placeIci.getPlacables().add(new ElementBateau(out.getNbCase(), out, placeIci));
+				placeIci.addPlacable(new ElementBateau(out.getNbCase(), out, placeIci));
 				placeIci = caseArriere.voisin(EDirection.Nord).voisin(EDirection.Est).voisin(EDirection.Est);
-				placeIci.getPlacables().add(new ElementBateau(out.getNbCase(), out, placeIci));
+				placeIci.addPlacable(new ElementBateau(out.getNbCase(), out, placeIci));
 				break;
 			case Nord:
 				placeIci = caseArriere.voisin(EDirection.Ouest);
-				placeIci.getPlacables().add(new ElementBateau(out.getNbCase(), out, placeIci));
+				placeIci.addPlacable(new ElementBateau(out.getNbCase(), out, placeIci));
 				placeIci = caseArriere.voisin(EDirection.Ouest).voisin(EDirection.Nord);
-				placeIci.getPlacables().add(new ElementBateau(out.getNbCase(), out, placeIci));
+				placeIci.addPlacable(new ElementBateau(out.getNbCase(), out, placeIci));
 				placeIci = caseArriere.voisin(EDirection.Ouest).voisin(EDirection.Nord).voisin(EDirection.Nord);
-				placeIci.getPlacables().add(new ElementBateau(out.getNbCase(), out, placeIci));
+				placeIci.addPlacable(new ElementBateau(out.getNbCase(), out, placeIci));
 				break;
 			case Ouest:
 				placeIci = caseArriere.voisin(EDirection.Sud);
-				placeIci.getPlacables().add(new ElementBateau(out.getNbCase(), out, placeIci));
+				placeIci.addPlacable(new ElementBateau(out.getNbCase(), out, placeIci));
 				placeIci = caseArriere.voisin(EDirection.Sud).voisin(EDirection.Ouest);
-				placeIci.getPlacables().add(new ElementBateau(out.getNbCase(), out, placeIci));
+				placeIci.addPlacable(new ElementBateau(out.getNbCase(), out, placeIci));
 				placeIci = caseArriere.voisin(EDirection.Sud).voisin(EDirection.Ouest).voisin(EDirection.Ouest);
-				placeIci.getPlacables().add(new ElementBateau(out.getNbCase(), out, placeIci));
+				placeIci.addPlacable(new ElementBateau(out.getNbCase(), out, placeIci));
 				break;
 			case Sud:
 				placeIci = caseArriere.voisin(EDirection.Est);
-				placeIci.getPlacables().add(new ElementBateau(out.getNbCase(), out, placeIci));
+				placeIci.addPlacable(new ElementBateau(out.getNbCase(), out, placeIci));
 				placeIci = caseArriere.voisin(EDirection.Est).voisin(EDirection.Sud);
-				placeIci.getPlacables().add(new ElementBateau(out.getNbCase(), out, placeIci));
+				placeIci.addPlacable(new ElementBateau(out.getNbCase(), out, placeIci));
 				placeIci = caseArriere.voisin(EDirection.Est).voisin(EDirection.Sud).voisin(EDirection.Sud);
-				placeIci.getPlacables().add(new ElementBateau(out.getNbCase(), out, placeIci));
+				placeIci.addPlacable(new ElementBateau(out.getNbCase(), out, placeIci));
 				break;
 			default:
 				break;
 		}
 		
 		joueur.ajouteBateau(out);
+		out.triggerWholeUpdate();
 		return out;
 	}
 	

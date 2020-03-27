@@ -27,6 +27,7 @@ private IAsker asker;
 		buildElementBateau(caseArriere, caseDirection, out, 3);
 		joueur.ajouteBateau(out);
 		
+		out.triggerWholeUpdate();
 		return out;
 	}
 }

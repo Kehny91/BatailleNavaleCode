@@ -28,6 +28,7 @@ public class CroiseurFactory extends BateauFactory{
 		buildElementBateau(caseArriere, caseDirection, out, 4);
 		joueur.ajouteBateau(out);
 		
+		out.triggerWholeUpdate();
 		return out;
 	}
 	

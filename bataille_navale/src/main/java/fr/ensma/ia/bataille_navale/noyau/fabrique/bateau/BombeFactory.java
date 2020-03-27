@@ -17,10 +17,11 @@ public class BombeFactory extends BateauFactory {
 		Case caseBombe = joueur.getGrille().getRandomCase();
 		
 		//Cas special car nbCases != def
-		caseBombe.getPlacables().add(new ElementBateau(3, out, caseBombe));
+		caseBombe.addPlacable(new ElementBateau(3, out, caseBombe));
 		
 		joueur.ajouteBateau(out);
 		
+		out.triggerWholeUpdate();
 		return out;
 	}
 

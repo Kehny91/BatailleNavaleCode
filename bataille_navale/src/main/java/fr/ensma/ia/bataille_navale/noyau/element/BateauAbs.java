@@ -27,6 +27,15 @@ public abstract class BateauAbs {
 		else
 			elementsBateau.add(e);
 	}
+	
+	public void triggerWholeUpdate()
+	{
+		for (ElementBateau e : elementsBateau)
+		{
+			e.etatChanged.notifyObservateurs();
+			e.getCase().somethingChanged.notifyObservateurs();
+		}
+	}
 
 	public int getNbCase() {
 		return nbCase;

@@ -5,3 +5,5 @@ Nous ferons la conversion {char, int} uniquement lors de l'affichage
 
 
 Une Factory générique a finalement été crée pour l'enemble des bateau standard
+Le "Modele" d'une case est finalement une collection de méthode faisant l'interface avec la case du noyau
+Cela permet de mettre en forme les données

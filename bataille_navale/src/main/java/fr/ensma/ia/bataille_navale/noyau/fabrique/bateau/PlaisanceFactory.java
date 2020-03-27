@@ -26,10 +26,11 @@ public class PlaisanceFactory extends BateauFactory {
 		Torpilleur out = new Torpilleur(joueur);
 		
 		//Cas special car nbCases != def
-		caseArriere.getPlacables().add(new ElementBateau(2, out, caseArriere));
+		caseArriere.addPlacable(new ElementBateau(2, out, caseArriere));
 		
 		joueur.ajouteBateau(out);
 		
+		out.triggerWholeUpdate();
 		return out;
 	}
 }

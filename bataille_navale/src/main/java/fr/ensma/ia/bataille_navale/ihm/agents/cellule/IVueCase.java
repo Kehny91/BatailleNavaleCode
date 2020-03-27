@@ -6,4 +6,7 @@ public interface IVueCase {
 			boolean connectEast);
 	void blitTouche();
 	void blitCoule();
+	
+	int getCaseWidth();
+	int getCaseHeight();
 }

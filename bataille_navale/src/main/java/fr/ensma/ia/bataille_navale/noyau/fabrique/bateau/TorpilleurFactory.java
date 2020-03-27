@@ -27,6 +27,7 @@ public class TorpilleurFactory extends BateauFactory {
 		buildElementBateau(caseArriere, caseDirection, out, 2);
 		joueur.ajouteBateau(out);
 		
+		out.triggerWholeUpdate();
 		return out;
 	}
 

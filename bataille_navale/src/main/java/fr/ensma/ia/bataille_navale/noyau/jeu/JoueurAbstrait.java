@@ -3,11 +3,15 @@ package fr.ensma.ia.bataille_navale.noyau.jeu;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.ensma.ia.bataille_navale.ExceptionBadInput;
 import fr.ensma.ia.bataille_navale.Parametres;
+import fr.ensma.ia.bataille_navale.ihm.IAsker;
 import fr.ensma.ia.bataille_navale.noyau.actions.IAction;
 import fr.ensma.ia.bataille_navale.observation.GenericObservable;
 import fr.ensma.ia.bataille_navale.noyau.automates.automateJoueur.*;
 import fr.ensma.ia.bataille_navale.noyau.element.BateauAbs;
+import fr.ensma.ia.bataille_navale.noyau.fabrique.bateau.BateauFactory;
+import fr.ensma.ia.bataille_navale.noyau.fabrique.bateau.EBateau;
 
 public abstract class JoueurAbstrait implements IJoueur{
 	//< === REFERENCES === >
@@ -70,13 +74,6 @@ public abstract class JoueurAbstrait implements IJoueur{
 	}
 
 	@Override
-	public void initialiserGrille(int largeur, int hauteur)
-	{
-		myGrid = new Grille(largeur,hauteur);
-		//A compléter dans les classes filles
-	}
-
-	@Override
 	public List<IAction> getActionDispo() {
 		// TODO Auto-generated method stub
 		return null;
@@ -90,6 +87,35 @@ public abstract class JoueurAbstrait implements IJoueur{
 	@Override
 	public List<BateauAbs> getBateaux() {
 		return bateaux;
+	}
+	
+	@Override
+	public void initialiseBateaux(IAsker asker) {
+		BateauFactory bf;
+		boolean retry;
+		
+		for (EBateau e : EBateau.values())
+		{
+			if (e!=EBateau.Bombe)
+			{
+				retry = true;
+				while (retry)
+				{
+					try {
+						System.out.println("Creation du bateau " + e.toString());
+						bf = BateauFactory.createFactory(e, asker);
+						bf.createBateau(this);
+						retry = false;
+						
+					} catch (ExceptionBadInput e1) {
+						e1.printStackTrace();
+						System.out.println("It failed, try again");
+						retry = true;
+					}
+				}
+			}
+		}
+
 	}
 	
 	public Grille getGrille()
@@ -109,7 +135,7 @@ public abstract class JoueurAbstrait implements IJoueur{
 		this.etatCourant = etatEndormi;
 		this.stateChanged = new GenericObservable();
 		this.bateaux = new ArrayList<BateauAbs>();
-		initialiserGrille(Parametres.largeur,Parametres.hauteur);
+		myGrid = new Grille(Parametres.largeur,Parametres.hauteur);
 	}
 	
 	

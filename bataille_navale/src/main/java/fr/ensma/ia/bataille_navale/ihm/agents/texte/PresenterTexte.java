@@ -24,4 +24,11 @@ public class PresenterTexte {
 		model.setText(s);
 		vue.afficheText(s);
 	}
+	
+	public void clean() throws ExceptionNoVueSet {
+		if (vue==null)
+			throw new ExceptionNoVueSet();
+		model.setText("");
+		vue.clean();
+	}
 }

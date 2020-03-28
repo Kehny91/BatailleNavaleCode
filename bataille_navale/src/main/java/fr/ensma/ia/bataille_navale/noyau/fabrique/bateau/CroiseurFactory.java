@@ -18,12 +18,12 @@ public class CroiseurFactory extends BateauFactory{
 	
 	@Override
 	public BateauAbs createBateau(IJoueur joueur) throws ExceptionBadInput {
-		Case caseArriere = asker.demandeUneCase("Case Arrière",joueur.getGrille());
-		Case caseDirection = asker.demandeUneCase("Direction",joueur.getGrille());
+		Case caseArriere = asker.demandeUneCase("Selectionner la case arrière du croiseur",joueur.getGrille());
+		Case caseDirection = asker.demandeUneCase("Selectionner la direction du bateau",joueur.getGrille());
 		
 		checkElementBateau(caseArriere, caseDirection, 4);
 		
-		Croiseur out = new Croiseur(joueur);
+		Croiseur out = new Croiseur(joueur,getDirection(caseArriere, caseDirection));
 		
 		buildElementBateau(caseArriere, caseDirection, out, 4);
 		joueur.ajouteBateau(out);

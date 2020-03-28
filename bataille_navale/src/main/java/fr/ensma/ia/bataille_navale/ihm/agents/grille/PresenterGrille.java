@@ -6,6 +6,7 @@ import java.util.List;
 import fr.ensma.ia.bataille_navale.ExceptionBadInput;
 import fr.ensma.ia.bataille_navale.Parametres;
 import fr.ensma.ia.bataille_navale.ihm.IAsker;
+import fr.ensma.ia.bataille_navale.ihm.agents.ExceptionNoVueSet;
 import fr.ensma.ia.bataille_navale.ihm.agents.cellule.IVueCase;
 import fr.ensma.ia.bataille_navale.ihm.agents.cellule.PresenterCase;
 import fr.ensma.ia.bataille_navale.ihm.agents.cellule.VueCase;
@@ -18,7 +19,7 @@ import fr.ensma.ia.bataille_navale.observation.IObservateur;
 public class PresenterGrille implements IAsker{
 	private IVueGrille vue;
 	private List<PresenterCase> presenters;
-	private List<IObservateur> observateurs; //Observe si les cases sont clikés
+	private List<IObservateur> observateurs; //Observe si les cases sont cliquées
 	private final Grille grille;
 	private IJoueur looker;
 	private Case lastCelluleClicked;
@@ -55,6 +56,16 @@ public class PresenterGrille implements IAsker{
 		}
 	}
 	
+	public void updateAll() {
+		for (PresenterCase pres : presenters) {
+			try {
+				pres.updateView();
+			} catch (ExceptionNoVueSet e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	/*
 	 * Quand on set la vue de la grille,
 	 * on cree les vues des cases et fait le lien avec les presenters existant
@@ -65,7 +76,7 @@ public class PresenterGrille implements IAsker{
 		IVueCase currentCaseVue;
 		for (PresenterCase pres : presenters)
 		{
-			currentCaseVue = new VueCase(vue.getGrilleWidth()/Parametres.largeur, vue.getGrilleHeight()/Parametres.hauteur, pres);
+			currentCaseVue = new VueCase(pres);
 			pres.setVue(currentCaseVue);
 			vue.ajouteVueCase(currentCaseVue, pres.getCaseX(), pres.getCaseY());
 		}
@@ -75,12 +86,13 @@ public class PresenterGrille implements IAsker{
 
 	@Override
 	public Case demandeUneCase(String string, Grille grille) throws ExceptionBadInput {
-		System.out.println(string);
+		if (string!=null)
+			System.out.println(string);
 		lastCelluleClicked = null;
 		while (lastCelluleClicked == null)
 		{
 			try {
-				Thread.sleep(100);
+				Thread.sleep(10);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

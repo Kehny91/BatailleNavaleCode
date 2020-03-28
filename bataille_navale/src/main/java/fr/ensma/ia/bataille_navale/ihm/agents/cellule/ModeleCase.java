@@ -99,9 +99,19 @@ public class ModeleCase {
 		return cellule.getElementBateau().getNiveauDef0();
 	}
 	
+	public boolean isHead() throws ExceptionPasDeBateauIci
+	{
+		return cellule.getElementBateau().isHead();
+	}
+	
 	public void finDeTour()
 	{
 		if (nbTourVisible>0)
 			nbTourVisible--;
+	}
+
+
+	public EDirection getCap() throws ExceptionPasDeBateauIci {
+		return cellule.getElementBateau().getBateauAbs().getCap();
 	}
 }

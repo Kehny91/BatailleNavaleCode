@@ -9,21 +9,30 @@ import javax.swing.border.Border;
 import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.control.TextField;
 
-public class VueTexte extends HBox implements IVueTexte{
+public class VueTexte extends GridPane implements IVueTexte{
 
 	private PresenterTexte pres;
 	private TextField tf;
 	
-	public VueTexte(PresenterTexte pres, int width, int height)
+	public VueTexte(PresenterTexte pres)
 	{
 		this.pres = pres;
+		this.setMinSize(10, 10);
+		this.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 		this.setBorder(new javafx.scene.layout.Border(new BorderStroke(null, BorderStrokeStyle.SOLID, null, new BorderWidths(2))));
-		this.setWidth(width);
-		this.setHeight(height);
+		this.setGridLinesVisible(true);
+		
 		tf = new TextField();
+		tf.setEditable(false);
+		tf.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+		
+		GridPane.setHgrow(tf, Priority.ALWAYS);
+		GridPane.setVgrow(tf, Priority.ALWAYS);
 		this.getChildren().add(tf);
 	}
 	

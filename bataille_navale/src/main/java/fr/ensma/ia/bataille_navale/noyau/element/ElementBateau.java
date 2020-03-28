@@ -16,6 +16,7 @@ public class ElementBateau implements IGestionEtat, IPlacable{
 	private IEtat lastEtat;
 	private BateauAbs bateauAbs;
 	private Case caseImOn;
+	private boolean head;
 	
 	public GenericObservable etatChanged;
 	
@@ -36,7 +37,16 @@ public class ElementBateau implements IGestionEtat, IPlacable{
 		
 		etatChanged = new GenericObservable();
 		bateauAbs.ajouteElementBateau(this);
+		head = false;
 		//System.out.println("Nouvel element en "+ caseImOn.getX() +" "+caseImOn.getY());
+	}
+	
+	public void setHead(boolean head) {
+		this.head = head;
+	}
+	
+	public boolean isHead() {
+		return head;
 	}
 	
 	

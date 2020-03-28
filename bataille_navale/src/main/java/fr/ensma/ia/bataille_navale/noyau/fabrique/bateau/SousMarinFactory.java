@@ -17,12 +17,12 @@ private IAsker asker;
 
 	@Override
 	public BateauAbs createBateau(IJoueur joueur) throws ExceptionBadInput {
-		Case caseArriere = asker.demandeUneCase("Case Arrière",joueur.getGrille());
-		Case caseDirection = asker.demandeUneCase("Direction",joueur.getGrille());
+		Case caseArriere = asker.demandeUneCase("Selectionner la case arrière du sous marin",joueur.getGrille());
+		Case caseDirection = asker.demandeUneCase("Selectionner la direction du bateau",joueur.getGrille());
 		
 		checkElementBateau(caseArriere, caseDirection, 3);
 		
-		SousMarin out = new SousMarin(joueur);
+		SousMarin out = new SousMarin(joueur, getDirection(caseArriere, caseDirection));
 		
 		buildElementBateau(caseArriere, caseDirection, out, 3);
 		joueur.ajouteBateau(out);

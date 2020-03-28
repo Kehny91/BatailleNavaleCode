@@ -3,6 +3,7 @@ package fr.ensma.ia.bataille_navale.noyau.element;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.ensma.ia.bataille_navale.noyau.jeu.EDirection;
 import fr.ensma.ia.bataille_navale.noyau.jeu.IJoueur;
 
 public abstract class BateauAbs {
@@ -11,14 +12,16 @@ public abstract class BateauAbs {
 	protected boolean peutTirer;
 	protected IJoueur owner;
 	protected List<ElementBateau> elementsBateau;
+	protected EDirection cap;
 	
-	public BateauAbs(int nbCase, boolean peutTirer, IJoueur owner) {
+	public BateauAbs(int nbCase, boolean peutTirer, EDirection cap, IJoueur owner) {
 		super();
 		this.nbCase = nbCase;
 		this.enVie = true;
 		this.peutTirer = peutTirer;
 		this.owner = owner;
 		this.elementsBateau = new ArrayList<ElementBateau>();
+		this.cap = cap;
 	}
 	
 	public void ajouteElementBateau(ElementBateau e){
@@ -75,6 +78,10 @@ public abstract class BateauAbs {
 
 	public void setElementsBateau(List<ElementBateau> elementsBateau) {
 		this.elementsBateau = elementsBateau;
+	}
+
+	public EDirection getCap() {
+		return cap;
 	}
 	
 	

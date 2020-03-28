@@ -1,6 +1,7 @@
 package fr.ensma.ia.bataille_navale.noyau.fabrique.bateau;
 
 import fr.ensma.ia.bataille_navale.ExceptionBadInput;
+import fr.ensma.ia.bataille_navale.ExceptionPasDeBateauIci;
 import fr.ensma.ia.bataille_navale.ihm.IAsker;
 import fr.ensma.ia.bataille_navale.noyau.element.BateauAbs;
 import fr.ensma.ia.bataille_navale.noyau.element.ElementBateau;
@@ -85,10 +86,19 @@ public abstract class BateauFactory {
 		
 		//Les verifications ont été faites, on peut construire le bateau
 		Case placeIci = caseDepart;
-		for (int i = 0; i < size ; i++){
+		placeIci.addPlacable(new ElementBateau(bateau.getNbCase(), bateau, placeIci));
+		for (int i = 1; i < size ; i++){
 			//System.out.println("Je place en " + placeIci.getX() + " y " + placeIci.getY() + " caseN " + placeIci.hashCode());
-			placeIci.addPlacable(new ElementBateau(bateau.getNbCase(), bateau, placeIci));
 			placeIci = placeIci.voisin(direction);
+			placeIci.addPlacable(new ElementBateau(bateau.getNbCase(), bateau, placeIci));
 		}
+		
+		try {
+			placeIci.getElementBateau().setHead(true);
+		} catch (ExceptionPasDeBateauIci e) {
+			e.printStackTrace();
+			//Inexplicable
+		}
+		
 	}
 }

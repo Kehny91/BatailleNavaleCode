@@ -17,12 +17,12 @@ public class TorpilleurFactory extends BateauFactory {
 
 	@Override
 	public BateauAbs createBateau(IJoueur joueur) throws ExceptionBadInput {
-		Case caseArriere = asker.demandeUneCase("Case Arrière",joueur.getGrille());
-		Case caseDirection = asker.demandeUneCase("Direction",joueur.getGrille());
+		Case caseArriere = asker.demandeUneCase("Selectionner la case arrière du torpilleur",joueur.getGrille());
+		Case caseDirection = asker.demandeUneCase("Selectionner la direction du bateau",joueur.getGrille());
 		
 		checkElementBateau(caseArriere, caseDirection, 2);
 		
-		Torpilleur out = new Torpilleur(joueur);
+		Torpilleur out = new Torpilleur(joueur, getDirection(caseArriere, caseDirection));
 		
 		buildElementBateau(caseArriere, caseDirection, out, 2);
 		joueur.ajouteBateau(out);

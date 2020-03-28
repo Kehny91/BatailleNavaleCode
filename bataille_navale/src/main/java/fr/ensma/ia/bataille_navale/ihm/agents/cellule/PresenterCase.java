@@ -18,10 +18,12 @@ public class PresenterCase implements IObservateur{
 	private ModeleCase model;
 	private IVueCase vue;
 	private int xCase,yCase;
-	public IObservable onMaClicke;	
+	private IJoueur looker;
+	public IObservable onMaClicke;
 	
 	public void handleClick()
 	{
+		System.out.println("Click sur une case du joueur " + looker.toString());
 		onMaClicke.notifyObservateurs();
 	}
 	
@@ -34,6 +36,8 @@ public class PresenterCase implements IObservateur{
 		{
 			try {
 				vue.blitBateau(model.getNiveauDef0(), model.getNiveauDef(), model.connect(EDirection.Nord), model.connect(EDirection.Sud), model.connect(EDirection.Ouest), model.connect(EDirection.Est));
+				if (model.isHead())
+					vue.blitHead(model.getCap());
 			} catch (ExceptionPasDeBateauIci e) {
 				// Inexplicable
 				e.printStackTrace();
@@ -53,6 +57,7 @@ public class PresenterCase implements IObservateur{
 	
 	public PresenterCase(final Case cellule, final IJoueur looker)
 	{
+		this.looker = looker;
 		xCase = cellule.getX();
 		yCase = cellule.getY();
 		model = new ModeleCase(cellule,looker);

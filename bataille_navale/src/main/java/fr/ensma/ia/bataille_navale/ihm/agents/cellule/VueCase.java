@@ -73,7 +73,7 @@ public class VueCase extends HBox implements IVueCase, EventHandler<MouseEvent> 
 			graphicContext.setStroke(Color.RED);
 			graphicContext.setLineWidth(2);
 			graphicContext.setFont(new Font(height/2));
-			graphicContext.strokeText(String.valueOf(def), width/3, height/3, width/3);
+			graphicContext.strokeText(String.valueOf(def), width/3, height*2/3, width/3);
 		}
 		blitBorder();
 	}
@@ -124,19 +124,26 @@ public class VueCase extends HBox implements IVueCase, EventHandler<MouseEvent> 
 
 	@Override
 	public void blitTouche() {
-		clean();
 		graphicContext.setFill(Color.RED);
 		graphicContext.fillRoundRect(getWidth()*2/5, getHeight()*2/5, getWidth()/5, getHeight()/5, 2, 2);
 		blitBorder();
 	}
 	
+	
 	@Override
 	public void blitCoule() {
-		clean();
 		graphicContext.setStroke(Color.RED);
 		graphicContext.setLineWidth(5);
 		graphicContext.strokeLine(0, 0, getWidth(), getHeight());
 		graphicContext.strokeLine(getWidth(), 0, 0, getHeight());
+		blitBorder();
+	}
+	
+	@Override
+	public void blitDetruit() {
+		graphicContext.setStroke(Color.RED);
+		graphicContext.setLineWidth(5);
+		graphicContext.strokeLine(0, 0, getWidth(), getHeight());
 		blitBorder();
 	}
 	
@@ -156,6 +163,26 @@ public class VueCase extends HBox implements IVueCase, EventHandler<MouseEvent> 
 	@Override
 	public void handle(MouseEvent event) {
 		pres.handleClick();
+	}
+
+	@Override
+	public void blitSelected() {
+		graphicContext.setStroke(Color.LIGHTSLATEGRAY);
+		graphicContext.setLineWidth(getWidth()/5);
+		graphicContext.strokeRect(0, 0, getWidth(), getHeight());
+	}
+
+	@Override
+	public void blitUnknown() {
+		BGN(Color.GRAY);
+		blitBorder();
+	}
+
+	@Override
+	public void blitPlouf() {
+		graphicContext.setFill(Color.SNOW);
+		graphicContext.fillRoundRect(getWidth()*2/5, getHeight()*2/5, getWidth()/5, getHeight()/5, 2, 2);
+		blitBorder();
 	}
 
 	

@@ -8,4 +8,5 @@ import fr.ensma.ia.bataille_navale.noyau.jeu.Grille;
 public interface IAsker {
 	public Case demandeUneCase(String string, Grille grille) throws ExceptionBadInput;
 	public BateauAbs demandeUnBateau();
+	public void clean(); //Retire les selections
 }

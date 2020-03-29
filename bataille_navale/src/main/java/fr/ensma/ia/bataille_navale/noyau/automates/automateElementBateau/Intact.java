@@ -14,7 +14,7 @@ public class Intact extends AbsEtat {
 		if (puiss>0)
 		{
 			if (eBateau.getNiveauDef()-puiss<=0){
-				eBateau.setEtatCourant(eBateau.getEtatCoule());
+				eBateau.setEtatCourant(eBateau.getEtatDetruit());
 			}
 			else {
 				eBateau.setEtatCourant(eBateau.getEtatTouche());

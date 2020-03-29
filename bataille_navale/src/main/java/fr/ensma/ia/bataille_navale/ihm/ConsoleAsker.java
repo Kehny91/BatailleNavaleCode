@@ -26,4 +26,9 @@ public class ConsoleAsker implements IAsker {
 		return null;
 	}
 
+	@Override
+	public void clean() {
+		System.out.println("cleaned");
+	}
+
 }

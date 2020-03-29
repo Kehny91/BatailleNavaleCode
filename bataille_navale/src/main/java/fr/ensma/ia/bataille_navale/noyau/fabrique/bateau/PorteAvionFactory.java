@@ -20,6 +20,7 @@ public class PorteAvionFactory extends BateauFactory {
 	public BateauAbs createBateau(IJoueur joueur) throws ExceptionBadInput {
 		Case caseArriere = asker.demandeUneCase("Selectionner la case arrière du porte avion",joueur.getGrille());
 		Case caseDirection = asker.demandeUneCase("Selectionner la Direction du bateau",joueur.getGrille());
+		asker.clean();
 		
 		EDirection direction = getDirection(caseArriere, caseDirection);
 		
@@ -103,6 +104,7 @@ public class PorteAvionFactory extends BateauFactory {
 		}
 		
 		joueur.ajouteBateau(out);
+		
 		out.triggerWholeUpdate();
 		return out;
 	}

@@ -20,6 +20,7 @@ public class CroiseurFactory extends BateauFactory{
 	public BateauAbs createBateau(IJoueur joueur) throws ExceptionBadInput {
 		Case caseArriere = asker.demandeUneCase("Selectionner la case arrière du croiseur",joueur.getGrille());
 		Case caseDirection = asker.demandeUneCase("Selectionner la direction du bateau",joueur.getGrille());
+		asker.clean();
 		
 		checkElementBateau(caseArriere, caseDirection, 4);
 		

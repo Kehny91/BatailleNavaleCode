@@ -1,5 +1,6 @@
 package fr.ensma.ia.bataille_navale.noyau.element;
 
+import fr.ensma.ia.bataille_navale.noyau.automates.ExceptionBadState;
 import fr.ensma.ia.bataille_navale.noyau.automates.automateElementBateau.*;
 import fr.ensma.ia.bataille_navale.noyau.jeu.Case;
 import fr.ensma.ia.bataille_navale.observation.GenericObservable;
@@ -11,7 +12,7 @@ import fr.ensma.ia.bataille_navale.observation.GenericObservable;
 public class ElementBateau implements IGestionEtat, IPlacable{
 	private int niveauDef0;
 	private int niveauDef;
-	private IEtat etatCoule,etatIntact,etatTouche;
+	private IEtat etatDetruit,etatIntact,etatTouche;
 	private IEtat etatCourant;
 	private IEtat lastEtat;
 	private BateauAbs bateauAbs;
@@ -28,7 +29,7 @@ public class ElementBateau implements IGestionEtat, IPlacable{
 		this.bateauAbs = bateauAbs;
 		this.caseImOn = caseImOn;
 		
-		this.etatCoule = new Coule(this);
+		this.etatDetruit = new Detruit(this);
 		this.etatIntact = new Intact(this);
 		this.etatTouche = new Touche(this);
 		
@@ -68,8 +69,8 @@ public class ElementBateau implements IGestionEtat, IPlacable{
 	}
 
 	@Override
-	public IEtat getEtatCoule() {
-		return etatCoule;
+	public IEtat getEtatDetruit() {
+		return etatDetruit;
 	}
 
 	@Override
@@ -105,5 +106,14 @@ public class ElementBateau implements IGestionEtat, IPlacable{
 	@Override
 	public Case getCase() {
 		return caseImOn;
+	}
+	
+	public void handleAttaque(int puissance) {
+		try {
+			etatCourant.estAttaque(puissance);
+			niveauDef = Math.max(0,niveauDef - puissance);
+		} catch (ExceptionBadState e) {
+			e.printStackTrace();
+		}
 	}
 }

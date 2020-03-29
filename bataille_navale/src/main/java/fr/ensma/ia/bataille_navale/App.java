@@ -25,9 +25,9 @@ import javafx.stage.Stage;
  */
 public class App extends Application
 {
-	IJoueur moi,lui;
-	PresenterGlobal myPresGlobal;
-	PresenterGlobal hisPresGlobal;
+	IJoueur j1,j2;
+	PresenterGlobal presGlobalJ1;
+	PresenterGlobal presGlobalJ2;
 	KernelThread kernelThread;
 	
     public static void main( String[] args )
@@ -41,25 +41,25 @@ public class App extends Application
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		moi = new JoueurHumain();
-		lui = new JoueurHumain();
+		j1 = new JoueurHumain();
+		j2 = new JoueurHumain();
 		
-        myPresGlobal = new PresenterGlobal(moi, lui);
-        myPresGlobal.setVue(new VueGlobal(myPresGlobal));
+        presGlobalJ1 = new PresenterGlobal(j1, j2);
+        presGlobalJ1.setVue(new VueGlobal(presGlobalJ1));
         
-        hisPresGlobal = new PresenterGlobal(lui, moi);
-        hisPresGlobal.setVue(new VueGlobal(hisPresGlobal));
+        presGlobalJ2 = new PresenterGlobal(j2, j1);
+        presGlobalJ2.setVue(new VueGlobal(presGlobalJ2));
         
         
-        Scene myScene = new Scene((Parent) myPresGlobal.getVue(), Parametres.widthPix, Parametres.heightPix);
-        Scene hisScene = new Scene((Parent) hisPresGlobal.getVue(), Parametres.widthPix, Parametres.heightPix);
+        Scene sceneJ1 = new Scene((Parent) presGlobalJ1.getVue(), Parametres.widthPix, Parametres.heightPix);
+        Scene sceneJ2 = new Scene((Parent) presGlobalJ2.getVue(), Parametres.widthPix, Parametres.heightPix);
         Scene j1Toj2Scene = new Scene(new TransitionScreen("C'est au tour de J2") , Parametres.widthPix, Parametres.heightPix);
         Scene j2Toj1Scene = new Scene(new TransitionScreen("C'est au tour de J1") , Parametres.widthPix, Parametres.heightPix);
-        kernelThread = new KernelThread(moi, myPresGlobal, lui, hisPresGlobal, myScene, hisScene,j1Toj2Scene, j2Toj1Scene, primaryStage);
-        primaryStage.setScene(myScene);
+        kernelThread = new KernelThread(j1, presGlobalJ1, j2, presGlobalJ2, sceneJ1, sceneJ2,j1Toj2Scene, j2Toj1Scene, primaryStage);
+        primaryStage.setScene(sceneJ1);
 		primaryStage.show();
-		myPresGlobal.getPresGrilleMyBoats().updateAll();
-        myPresGlobal.getPresGrilleEnnemy().updateAll();
+		presGlobalJ1.getPresGrilleMyBoats().updateAll();
+		presGlobalJ1.getPresGrilleEnnemy().updateAll();
         kernelThread.start();
 	}
 }

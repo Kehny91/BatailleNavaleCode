@@ -5,16 +5,21 @@ import java.util.List;
 
 import fr.ensma.ia.bataille_navale.ExceptionBadInput;
 import fr.ensma.ia.bataille_navale.ExceptionPasDeBateauIci;
+import fr.ensma.ia.bataille_navale.noyau.actions.attaques.EResultat;
+import fr.ensma.ia.bataille_navale.noyau.actions.attaques.Resultat;
+import fr.ensma.ia.bataille_navale.noyau.automates.ExceptionBadState;
 import fr.ensma.ia.bataille_navale.noyau.element.BateauAbs;
 import fr.ensma.ia.bataille_navale.noyau.element.Bombe;
 import fr.ensma.ia.bataille_navale.noyau.element.ElementBateau;
 import fr.ensma.ia.bataille_navale.noyau.element.IPlacable;
+import fr.ensma.ia.bataille_navale.noyau.element.Plaisance;
 import fr.ensma.ia.bataille_navale.observation.GenericObservable;
 
 public class Case {
 	private int x,y;
 	private List<IPlacable> placables;
 	private Grille myGrille;
+	private EResultat ennemyHint = EResultat.None;
 	
 	public GenericObservable somethingChanged;
 	
@@ -38,10 +43,7 @@ public class Case {
 			somethingChanged.notifyObservateurs();
 	}
 	
-	/*
-	 * Ne renvoie pas les bombes
-	 */
-	public ElementBateau getElementBateau() throws ExceptionPasDeBateauIci
+	public ElementBateau getElementBateauSaufBombe() throws ExceptionPasDeBateauIci
 	{
 		if (placables.size()==0)
 			throw new ExceptionPasDeBateauIci();
@@ -58,9 +60,62 @@ public class Case {
 		}	
 	}
 	
-	public void onMeTireDessus()
+	public ElementBateau getElementBateau() throws ExceptionPasDeBateauIci
 	{
-		//TODO
+		if (placables.size()==0)
+			throw new ExceptionPasDeBateauIci();
+		else
+		{
+			for (IPlacable pl : placables)
+			{
+				if (pl.getClass()==ElementBateau.class)
+				{
+					return ((ElementBateau)pl);
+				}
+			}
+			throw new ExceptionPasDeBateauIci();
+		}	
+	}
+	
+	public EResultat getEnnemyHint() {
+		return ennemyHint;
+	}
+	
+	public void setEnnemyHint(EResultat res) {
+		ennemyHint = res;
+	}
+	
+	public Resultat onMeTireDessus(int puissance)
+	{
+		Resultat out = new Resultat();
+		out.setPenalite(0);
+		ElementBateau elB = null;
+		try {
+			elB = getElementBateau();
+			elB.handleAttaque(puissance);
+			if (!elB.getBateauAbs().isEnVie())
+			{
+				ennemyHint = EResultat.Coule;
+				out.setTypeResultat(EResultat.Coule);
+				elB.getBateauAbs().triggerWholeUpdate();
+				if (elB.getBateauAbs().getClass()==Plaisance.class)
+					out.setPenalite(3);
+			}
+			else if(elB.getEtatCourant()==elB.getEtatDetruit()) {
+				ennemyHint = EResultat.Detruit;
+				out.setTypeResultat(EResultat.Detruit);
+			}
+			else {
+				ennemyHint = EResultat.Touche;
+				out.setTypeResultat(EResultat.Touche);
+			}
+		} catch (ExceptionPasDeBateauIci e) {
+			ennemyHint = EResultat.Plouf;
+			out.setTypeResultat(EResultat.Plouf);
+		}
+		
+		this.somethingChanged.notifyObservateurs();
+		return out;
 	}
 	
 	

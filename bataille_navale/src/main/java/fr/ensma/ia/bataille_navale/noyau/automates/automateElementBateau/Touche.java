@@ -12,7 +12,7 @@ public class Touche extends AbsEtat {
 	@Override
 	public void estAttaque(int puiss) throws ExceptionBadState {
 		if (eBateau.getNiveauDef()-puiss<=0){
-			eBateau.setEtatCourant(eBateau.getEtatCoule());
+			eBateau.setEtatCourant(eBateau.getEtatDetruit());
 		}
 	}
 }

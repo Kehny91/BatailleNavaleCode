@@ -3,12 +3,12 @@ package fr.ensma.ia.bataille_navale.noyau.element;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.ensma.ia.bataille_navale.noyau.actions.attaques.EResultat;
 import fr.ensma.ia.bataille_navale.noyau.jeu.EDirection;
 import fr.ensma.ia.bataille_navale.noyau.jeu.IJoueur;
 
 public abstract class BateauAbs {
 	protected int nbCase;
-	protected boolean enVie;
 	protected boolean peutTirer;
 	protected IJoueur owner;
 	protected List<ElementBateau> elementsBateau;
@@ -17,7 +17,6 @@ public abstract class BateauAbs {
 	public BateauAbs(int nbCase, boolean peutTirer, EDirection cap, IJoueur owner) {
 		super();
 		this.nbCase = nbCase;
-		this.enVie = true;
 		this.peutTirer = peutTirer;
 		this.owner = owner;
 		this.elementsBateau = new ArrayList<ElementBateau>();
@@ -35,6 +34,8 @@ public abstract class BateauAbs {
 	{
 		for (ElementBateau e : elementsBateau)
 		{
+			if (!isEnVie())
+				e.getCase().setEnnemyHint(EResultat.Coule);
 			e.etatChanged.notifyObservateurs();
 			e.getCase().somethingChanged.notifyObservateurs();
 		}
@@ -49,15 +50,21 @@ public abstract class BateauAbs {
 	}
 
 	public boolean isEnVie() {
-		return enVie;
-	}
-
-	public void setEnVie(boolean enVie) {
-		this.enVie = enVie;
+		for (ElementBateau el : elementsBateau) {
+			if (el.getEtatCourant()!=el.getEtatDetruit())
+				return true;
+		}
+		return false;
 	}
 
 	public boolean isPeutTirer() {
-		return peutTirer;
+		boolean aAssezDeVie = false;
+		
+		for (ElementBateau el : elementsBateau) {
+			if (el.getEtatCourant()==el.getEtatIntact())
+				aAssezDeVie = true;
+		}
+		return peutTirer && aAssezDeVie;
 	}
 
 	public void setPeutTirer(boolean peutTirer) {

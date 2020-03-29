@@ -2,6 +2,7 @@ package fr.ensma.ia.bataille_navale.ihm.agents.cellule;
 
 import fr.ensma.ia.bataille_navale.ExceptionPasDeBateauIci;
 import fr.ensma.ia.bataille_navale.ihm.agents.ExceptionNoVueSet;
+import fr.ensma.ia.bataille_navale.noyau.actions.attaques.EResultat;
 import fr.ensma.ia.bataille_navale.noyau.element.ElementBateau;
 import fr.ensma.ia.bataille_navale.noyau.jeu.Case;
 import fr.ensma.ia.bataille_navale.noyau.jeu.EDirection;
@@ -43,6 +44,23 @@ public class PresenterCase implements IObservateur{
 				e.printStackTrace();
 			}
 		}
+		else { //Pas de bateau affichable
+			if (model.getOwner()!=looker) {
+				vue.blitUnknown();
+				if (model.getEnnemyHint()==EResultat.Plouf) {
+					vue.blitPlouf();
+				}else if (model.getEnnemyHint()==EResultat.Touche) {
+					vue.blitTouche();
+				}else if (model.getEnnemyHint()==EResultat.Coule) {
+					vue.blitCoule();
+				}else if (model.getEnnemyHint()==EResultat.Detruit) {
+					vue.blitDetruit();
+				}
+			}
+		}
+		
+		if (model.isSelected())
+			vue.blitSelected();
 	}
 	
 
@@ -55,12 +73,12 @@ public class PresenterCase implements IObservateur{
 		doOnNotification();
 	}
 	
-	public PresenterCase(final Case cellule, final IJoueur looker)
+	public PresenterCase(final Case cellule, final IJoueur looker, final IJoueur owner)
 	{
 		this.looker = looker;
 		xCase = cellule.getX();
 		yCase = cellule.getY();
-		model = new ModeleCase(cellule,looker);
+		model = new ModeleCase(cellule,looker, owner);
 		onMaClicke = new GenericObservable();
 		cellule.somethingChanged.addObservateur(this);
 	}
@@ -75,6 +93,18 @@ public class PresenterCase implements IObservateur{
 		} catch (ExceptionNoVueSet e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void select() {
+		model.setSelected(true);
+		vue.blitSelected();
+	}
+	
+	public void unselect() {
+		model.setSelected(false);
+		try {
+			updateView();
+		} catch (ExceptionNoVueSet e) {;}
 	}
 }
 

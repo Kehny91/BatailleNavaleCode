@@ -23,11 +23,13 @@ public class PresenterGrille implements IAsker{
 	private final Grille grille;
 	private IJoueur looker;
 	private Case lastCelluleClicked;
+	private List<PresenterCase> caseSelectionnee;
 	
-	public PresenterGrille(final Grille grille, IJoueur looker)
+	public PresenterGrille(final Grille grille, IJoueur looker, IJoueur owner)
 	{
 		presenters = new ArrayList<PresenterCase>();
 		observateurs = new ArrayList<IObservateur>(); // Un observateur par case (monitor les clicks)
+		caseSelectionnee = new ArrayList<PresenterCase>();
 		this.looker = looker;
 		this.grille = grille;
 		PresenterCase currentPresentationCase;
@@ -35,7 +37,7 @@ public class PresenterGrille implements IAsker{
 			for (int y=0;y<Parametres.hauteur;y++) {
 				try {
 					Case currentCase = grille.getCase(x, y);
-					currentPresentationCase = new PresenterCase(currentCase, looker);
+					currentPresentationCase = new PresenterCase(currentCase, looker, owner);
 					presenters.add(currentPresentationCase);
 					IObservateur observateurDeCetteCase = new IObservateur() {
 						
@@ -97,6 +99,8 @@ public class PresenterGrille implements IAsker{
 				e.printStackTrace();
 			}
 		}
+		findPresenter(lastCelluleClicked).select();
+		caseSelectionnee.add(findPresenter(lastCelluleClicked));
 		return lastCelluleClicked;
 	}
 
@@ -104,5 +108,21 @@ public class PresenterGrille implements IAsker{
 	public BateauAbs demandeUnBateau() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	private PresenterCase findPresenter(Case cellule) {
+		for (PresenterCase pres : presenters) {
+			if(pres.getCaseX() == cellule.getX() && pres.getCaseY() == cellule.getY())
+				return pres;
+		}
+		return null;
+	}
+
+	@Override
+	public void clean() {
+		for (PresenterCase pres : caseSelectionnee) {
+			pres.unselect();
+		}
+		caseSelectionnee.clear();
 	}
 }

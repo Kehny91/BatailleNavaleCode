@@ -3,9 +3,9 @@ package fr.ensma.ia.bataille_navale.noyau.automates.automateElementBateau;
 import fr.ensma.ia.bataille_navale.noyau.automates.ExceptionBadState;
 import fr.ensma.ia.bataille_navale.noyau.element.ElementBateau;
 
-public class Coule extends AbsEtat {
+public class Detruit extends AbsEtat {
 
-	public Coule(ElementBateau eBateau) {
+	public Detruit(ElementBateau eBateau) {
 		super(eBateau);
 	}
 	

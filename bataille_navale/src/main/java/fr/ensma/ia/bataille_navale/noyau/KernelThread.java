@@ -6,6 +6,7 @@ import fr.ensma.ia.bataille_navale.ihm.agents.global.PresenterGlobal;
 import fr.ensma.ia.bataille_navale.ihm.agents.grille.PresenterGrille;
 import fr.ensma.ia.bataille_navale.noyau.fabrique.bateau.BateauFactory;
 import fr.ensma.ia.bataille_navale.noyau.fabrique.bateau.EBateau;
+import fr.ensma.ia.bataille_navale.noyau.jeu.Case;
 import fr.ensma.ia.bataille_navale.noyau.jeu.IJoueur;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -37,6 +38,26 @@ public class KernelThread extends Thread {
         swapToJ2();
         j2.initialiseBateaux(presGlobalJ2);
         swapToJ1();
+        while (true) {
+        	Case cible = null;
+        	try {
+				cible = presGlobalJ1.demandeUneCase("Donne moi une cible", j2.getGrille());
+				presGlobalJ1.clean();
+			} catch (ExceptionBadInput e) {
+				e.printStackTrace();
+			}
+        	
+        	cible.onMeTireDessus(1);
+        	swapToJ2();
+        	try {
+				cible = presGlobalJ2.demandeUneCase("Donne moi une cible", j1.getGrille());
+				presGlobalJ2.clean();
+			} catch (ExceptionBadInput e) {
+				e.printStackTrace();
+			}
+        	cible.onMeTireDessus(1);
+        	swapToJ1();
+        }
 	}
 	
 	
@@ -48,7 +69,17 @@ public class KernelThread extends Thread {
 	
 	
 	
-	//Je les mets un peu plus bas parce qu'elle sont moche
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//Je les mets un peu plus bas parce qu'elles sont moches
 	private void swapToJ1() {
 		Platform.runLater(new Runnable(){
 

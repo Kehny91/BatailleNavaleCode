@@ -9,6 +9,7 @@ import fr.ensma.ia.bataille_navale.noyau.element.BateauAbs;
 import fr.ensma.ia.bataille_navale.noyau.jeu.Case;
 import fr.ensma.ia.bataille_navale.noyau.jeu.Grille;
 import fr.ensma.ia.bataille_navale.noyau.jeu.IJoueur;
+import javafx.application.Platform;
 
 public class PresenterGlobal implements IAsker{
 	private PresenterTexte presTexteJoueur,presTexteConsigne,presTexteAide;
@@ -54,37 +55,62 @@ public class PresenterGlobal implements IAsker{
 		presTexteJoueur = new PresenterTexte();
 		presTexteConsigne = new PresenterTexte();
 		presTexteAide = new PresenterTexte();
-		presGrilleMyBoats = new PresenterGrille(looker.getGrille(), looker);
-		presGrilleEnnemy = new PresenterGrille(ennemy.getGrille(), looker);
+		presGrilleMyBoats = new PresenterGrille(looker.getGrille(), looker, looker);
+		presGrilleEnnemy = new PresenterGrille(ennemy.getGrille(), looker, ennemy);
 	}
 
 	@Override
 	public Case demandeUneCase(String string, Grille grille) throws ExceptionBadInput {
-		try {
-			presTexteConsigne.setText(string);
-			if (grille == looker.getGrille()) {
-				presTexteAide.setText("Pour cela, veuillez cliquer sur l'une de vos case");
-				Case out = presGrilleMyBoats.demandeUneCase(null, grille);
-				presTexteConsigne.clean();
-				presTexteAide.clean();
-				return out;
+		Case out = null;
+		Platform.runLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					presTexteConsigne.setText(string);
+					if (grille == looker.getGrille()) 
+						presTexteAide.setText("Pour cela, veuillez cliquer sur l'une de vos case");
+					else 
+						presTexteAide.setText("Pour cela, veuillez cliquer sur l'une des cases adverses");
+				} catch (ExceptionNoVueSet e) {
+					e.printStackTrace();
+				}
+				
 			}
-			else {
-				presTexteAide.setText("Pour cela, veuillez cliquer sur l'une des cases adverses");
-				Case out = presGrilleEnnemy.demandeUneCase(null, grille);
-				presTexteConsigne.clean();
-				presTexteAide.clean();
-				return out;
+		});
+		
+		if (grille == looker.getGrille()) 
+			out = presGrilleMyBoats.demandeUneCase(null, grille);
+		else 
+			out = presGrilleEnnemy.demandeUneCase(null, grille);
+		
+		Platform.runLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					presTexteConsigne.clean();
+					presTexteAide.clean();
+				} catch (ExceptionNoVueSet e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
 			}
-		} catch (ExceptionNoVueSet e) {
-			e.printStackTrace();
-			return null;
-		}
+		});
+			
+		return out;
 	}
 
 	@Override
 	public BateauAbs demandeUnBateau() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void clean() {
+		presGrilleEnnemy.clean();
+		presGrilleMyBoats.clean();
 	}
 }

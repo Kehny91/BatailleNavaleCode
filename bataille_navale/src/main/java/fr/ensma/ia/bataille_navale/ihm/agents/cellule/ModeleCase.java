@@ -2,6 +2,7 @@ package fr.ensma.ia.bataille_navale.ihm.agents.cellule;
 
 import fr.ensma.ia.bataille_navale.ExceptionBadInput;
 import fr.ensma.ia.bataille_navale.ExceptionPasDeBateauIci;
+import fr.ensma.ia.bataille_navale.noyau.actions.attaques.EResultat;
 import fr.ensma.ia.bataille_navale.noyau.element.Bombe;
 import fr.ensma.ia.bataille_navale.noyau.element.ElementBateau;
 import fr.ensma.ia.bataille_navale.noyau.element.IPlacable;
@@ -13,14 +14,24 @@ public class ModeleCase {
 	private Case cellule;
 	private IJoueur looker;
 	private int nbTourVisible;
+	private boolean selected;
+	private IJoueur owner;
 	
-	public ModeleCase(Case cellule, IJoueur looker)
+	public ModeleCase(Case cellule, IJoueur looker, IJoueur owner)
 	{
 		this.cellule = cellule;
 		this.looker = looker;
+		this.owner = owner;
 		nbTourVisible = 0;
 	}
 	
+	public IJoueur getOwner() {
+		return owner;
+	}
+	
+	public EResultat getEnnemyHint() {
+		return cellule.getEnnemyHint();
+	}
 	
 	public boolean hasAShip()
 	{
@@ -36,7 +47,7 @@ public class ModeleCase {
 	{
 		ElementBateau e;
 		try {
-			e = cellule.getElementBateau();
+			e = cellule.getElementBateauSaufBombe();
 		} catch (ExceptionPasDeBateauIci ex) {
 			return false;
 		}
@@ -50,7 +61,7 @@ public class ModeleCase {
 		}
 		
 		try {
-			ElementBateau elementVoisin = voisine.getElementBateau();
+			ElementBateau elementVoisin = voisine.getElementBateauSaufBombe();
 			return elementVoisin.getBateauAbs()==e.getBateauAbs();
 		} catch (ExceptionPasDeBateauIci ex) {
 			return false;
@@ -61,7 +72,7 @@ public class ModeleCase {
 	{
 		ElementBateau e;
 		try {
-			e = cellule.getElementBateau();
+			e = cellule.getElementBateauSaufBombe();
 		} catch (ExceptionPasDeBateauIci e1) {
 			return false;
 		}
@@ -71,19 +82,10 @@ public class ModeleCase {
 			return nbTourVisible>0;
 	}
 	
-	public boolean hasBeenShot()
+	public boolean bateauIsCoule()
 	{
 		try {
-			return cellule.getElementBateau().getEtatCourant() == cellule.getElementBateau().getEtatTouche();
-		} catch (ExceptionPasDeBateauIci e) {
-			return false;
-		}
-	}
-	
-	public boolean isCoule()
-	{
-		try {
-			return cellule.getElementBateau().getEtatCourant() == cellule.getElementBateau().getEtatCoule();
+			return !cellule.getElementBateau().getBateauAbs().isEnVie();
 		} catch (ExceptionPasDeBateauIci e) {
 			return false;
 		}
@@ -91,17 +93,17 @@ public class ModeleCase {
 	
 	public int getNiveauDef() throws ExceptionPasDeBateauIci
 	{
-		return cellule.getElementBateau().getNiveauDef();
+		return cellule.getElementBateauSaufBombe().getNiveauDef();
 	}
 	
 	public int getNiveauDef0() throws ExceptionPasDeBateauIci
 	{
-		return cellule.getElementBateau().getNiveauDef0();
+		return cellule.getElementBateauSaufBombe().getNiveauDef0();
 	}
 	
 	public boolean isHead() throws ExceptionPasDeBateauIci
 	{
-		return cellule.getElementBateau().isHead();
+		return cellule.getElementBateauSaufBombe().isHead();
 	}
 	
 	public void finDeTour()
@@ -112,6 +114,15 @@ public class ModeleCase {
 
 
 	public EDirection getCap() throws ExceptionPasDeBateauIci {
-		return cellule.getElementBateau().getBateauAbs().getCap();
+		return cellule.getElementBateauSaufBombe().getBateauAbs().getCap();
+	}
+
+
+	public boolean isSelected() {
+		return selected;
+	}
+	
+	public void setSelected(boolean selected) {
+		this.selected = selected;
 	}
 }

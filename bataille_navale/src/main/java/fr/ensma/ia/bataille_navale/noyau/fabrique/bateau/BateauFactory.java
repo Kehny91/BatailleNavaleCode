@@ -73,10 +73,12 @@ public abstract class BateauFactory {
 		EDirection direction = getDirection(caseDepart, caseCible);
 		
 		Case check = caseDepart;
-		for (int i = 0; i < size ; i++){
+		if (! check.isEmpty())
+			throw new ExceptionBadInput();
+		for (int i = 1; i < size ; i++){
+			check = check.voisin(direction);
 			if (! check.isEmpty())
 				throw new ExceptionBadInput();
-			check = check.voisin(direction);
 		}
 	}
 	

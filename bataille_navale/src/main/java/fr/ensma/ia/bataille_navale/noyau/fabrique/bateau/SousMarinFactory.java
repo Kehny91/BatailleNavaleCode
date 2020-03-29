@@ -19,6 +19,7 @@ private IAsker asker;
 	public BateauAbs createBateau(IJoueur joueur) throws ExceptionBadInput {
 		Case caseArriere = asker.demandeUneCase("Selectionner la case arrière du sous marin",joueur.getGrille());
 		Case caseDirection = asker.demandeUneCase("Selectionner la direction du bateau",joueur.getGrille());
+		asker.clean();
 		
 		checkElementBateau(caseArriere, caseDirection, 3);
 		

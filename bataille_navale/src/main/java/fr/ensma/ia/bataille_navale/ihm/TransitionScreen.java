@@ -1,5 +1,6 @@
 package fr.ensma.ia.bataille_navale.ihm;
 
+import fr.ensma.ia.bataille_navale.outilsMultithread.Synchro;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -20,7 +21,7 @@ import javafx.scene.text.Font;
 public class TransitionScreen extends VBox implements EventHandler<ActionEvent>{
 	private Button buttonOk;
 	private TextField text;
-	private boolean buttonHasBeenPressed;
+	private Synchro synch;
 	
 	public TransitionScreen(String affiche) {
 		this.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
@@ -38,21 +39,20 @@ public class TransitionScreen extends VBox implements EventHandler<ActionEvent>{
 		VBox.setVgrow(buttonOk, Priority.ALWAYS);
 		VBox.setMargin(text, new Insets(20));
 		VBox.setMargin(buttonOk, new Insets(20));
-		buttonHasBeenPressed = false;
 		
 		buttonOk.setOnAction(this);
 		
 		this.getChildren().addAll(text,buttonOk);
-	}
-	
-	public boolean buttonPressed() {
-		boolean out = buttonHasBeenPressed;
-		buttonHasBeenPressed = false;
-		return out;
+		synch = new Synchro();
 	}
 
 	@Override
 	public void handle(ActionEvent event) {
-		buttonHasBeenPressed = true;
+		synch.unlock();
 	}
+	
+	public void waitUnlock() throws InterruptedException {
+		synch.waitUnlock();
+	}
+	
 }

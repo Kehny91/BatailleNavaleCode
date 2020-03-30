@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.ensma.ia.bataille_navale.ExceptionBadInput;
+import fr.ensma.ia.bataille_navale.ExceptionPasDeBateauIci;
 import fr.ensma.ia.bataille_navale.Parametres;
 import fr.ensma.ia.bataille_navale.ihm.IAsker;
 import fr.ensma.ia.bataille_navale.ihm.agents.ExceptionNoVueSet;
@@ -15,6 +16,7 @@ import fr.ensma.ia.bataille_navale.noyau.jeu.Case;
 import fr.ensma.ia.bataille_navale.noyau.jeu.Grille;
 import fr.ensma.ia.bataille_navale.noyau.jeu.IJoueur;
 import fr.ensma.ia.bataille_navale.observation.IObservateur;
+import fr.ensma.ia.bataille_navale.outilsMultithread.MDD;
 
 public class PresenterGrille implements IAsker{
 	private IVueGrille vue;
@@ -22,7 +24,7 @@ public class PresenterGrille implements IAsker{
 	private List<IObservateur> observateurs; //Observe si les cases sont cliquées
 	private final Grille grille;
 	private IJoueur looker;
-	private Case lastCelluleClicked;
+	private MDD<Case> lastCelluleClicked;
 	private List<PresenterCase> caseSelectionnee;
 	
 	public PresenterGrille(final Grille grille, IJoueur looker, IJoueur owner)
@@ -30,6 +32,7 @@ public class PresenterGrille implements IAsker{
 		presenters = new ArrayList<PresenterCase>();
 		observateurs = new ArrayList<IObservateur>(); // Un observateur par case (monitor les clicks)
 		caseSelectionnee = new ArrayList<PresenterCase>();
+		lastCelluleClicked = new MDD<Case>();
 		this.looker = looker;
 		this.grille = grille;
 		PresenterCase currentPresentationCase;
@@ -45,7 +48,7 @@ public class PresenterGrille implements IAsker{
 						
 						@Override
 						public void doOnNotification() {
-							lastCelluleClicked = maCase;
+							lastCelluleClicked.pushValue(maCase);
 						}
 					};
 					currentPresentationCase.onMaClicke.addObservateur(observateurDeCetteCase);
@@ -87,35 +90,44 @@ public class PresenterGrille implements IAsker{
 	public IVueGrille getVue() {return vue;}
 
 	@Override
-	public Case demandeUneCase(String string, Grille grille) throws ExceptionBadInput {
+	public Case demandeUneCase(String string, Grille grille) throws ExceptionBadInput, InterruptedException {
 		if (string!=null)
 			System.out.println(string);
-		lastCelluleClicked = null;
-		while (lastCelluleClicked == null)
-		{
-			try {
-				Thread.sleep(10);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-		findPresenter(lastCelluleClicked).select();
-		caseSelectionnee.add(findPresenter(lastCelluleClicked));
-		return lastCelluleClicked;
+		Case cell = lastCelluleClicked.waitNewValue();
+		findPresenter(cell).select();
+		caseSelectionnee.add(findPresenter(cell));
+		return cell;
 	}
 
 	@Override
-	public BateauAbs demandeUnBateau() {
-		// TODO Auto-generated method stub
-		return null;
+	public BateauAbs demandeUnBateau(String string, Grille grille) throws ExceptionBadInput, InterruptedException {
+		BateauAbs out = null;
+		boolean ok = false;
+		while (!ok) {
+			Case select = demandeUneCase(null, grille);
+			try {
+				out = select.getElementBateauSaufBombe().getBateauAbs();
+				ok = true;
+			} catch (ExceptionPasDeBateauIci e) {
+				// Pas de bateau ici
+				clean();
+				e.printStackTrace();
+			}
+		}
+		return out;
 	}
 	
-	private PresenterCase findPresenter(Case cellule) {
+	public PresenterCase findPresenter(Case cellule) {
 		for (PresenterCase pres : presenters) {
 			if(pres.getCaseX() == cellule.getX() && pres.getCaseY() == cellule.getY())
 				return pres;
 		}
 		return null;
+	}
+	
+	public void select(Case cellule) {
+		findPresenter(cellule).select();
+		caseSelectionnee.add(findPresenter(cellule));
 	}
 
 	@Override

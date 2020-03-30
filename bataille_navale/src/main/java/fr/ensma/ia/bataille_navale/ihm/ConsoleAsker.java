@@ -21,7 +21,7 @@ public class ConsoleAsker implements IAsker {
 	}
 
 	@Override
-	public BateauAbs demandeUnBateau() {
+	public BateauAbs demandeUnBateau(String string, Grille grille) {
 		// TODO Auto-generated method stub
 		return null;
 	}

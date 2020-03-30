@@ -1,11 +1,13 @@
 package fr.ensma.ia.bataille_navale.ihm.agents.global;
 
 import fr.ensma.ia.bataille_navale.ExceptionBadInput;
+import fr.ensma.ia.bataille_navale.ExceptionPasDeBateauIci;
 import fr.ensma.ia.bataille_navale.ihm.IAsker;
 import fr.ensma.ia.bataille_navale.ihm.agents.ExceptionNoVueSet;
 import fr.ensma.ia.bataille_navale.ihm.agents.grille.PresenterGrille;
 import fr.ensma.ia.bataille_navale.ihm.agents.texte.PresenterTexte;
 import fr.ensma.ia.bataille_navale.noyau.element.BateauAbs;
+import fr.ensma.ia.bataille_navale.noyau.element.ElementBateau;
 import fr.ensma.ia.bataille_navale.noyau.jeu.Case;
 import fr.ensma.ia.bataille_navale.noyau.jeu.Grille;
 import fr.ensma.ia.bataille_navale.noyau.jeu.IJoueur;
@@ -60,7 +62,7 @@ public class PresenterGlobal implements IAsker{
 	}
 
 	@Override
-	public Case demandeUneCase(String string, Grille grille) throws ExceptionBadInput {
+	public Case demandeUneCase(String string, Grille grille) throws ExceptionBadInput, InterruptedException {
 		Case out = null;
 		Platform.runLater(new Runnable() {
 			
@@ -103,9 +105,44 @@ public class PresenterGlobal implements IAsker{
 	}
 
 	@Override
-	public BateauAbs demandeUnBateau() {
-		// TODO Auto-generated method stub
-		return null;
+	public BateauAbs demandeUnBateau(String string, Grille grille) throws ExceptionBadInput, InterruptedException {
+		BateauAbs out = null;
+		Platform.runLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					presTexteConsigne.setText(string);
+					presTexteAide.setText("Pour cela, veuillez cliquer sur l'un de vos bateau");
+				} catch (ExceptionNoVueSet e) {
+					e.printStackTrace();
+				}
+				
+			}
+		});
+		
+		out = presGrilleMyBoats.demandeUnBateau(null,grille);
+		
+		Platform.runLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					presTexteConsigne.clean();
+					presTexteAide.clean();
+				} catch (ExceptionNoVueSet e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+		});
+		
+		for (ElementBateau el : out.getElementsBateau()) {
+			presGrilleMyBoats.select(el.getCase());
+		}
+		
+		return out;
 	}
 
 	@Override

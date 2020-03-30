@@ -18,8 +18,18 @@ private IAsker asker;
 	@Override
 	public BateauAbs createBateau(IJoueur joueur) throws ExceptionBadInput {
 		
-		Case caseArriere = asker.demandeUneCase("Selectionner la case arrière du contre-torpilleur",joueur.getGrille());
-		Case caseDirection = asker.demandeUneCase("Selectionner la direction du bateau",joueur.getGrille());
+		Case caseArriere = null;
+		try {
+			caseArriere = asker.demandeUneCase("Selectionner la case arrière du contre-torpilleur",joueur.getGrille());
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		Case caseDirection = null;
+		try {
+			caseDirection = asker.demandeUneCase("Selectionner la direction du bateau",joueur.getGrille());
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		asker.clean();
 		
 		checkElementBateau(caseArriere, caseDirection, 3);

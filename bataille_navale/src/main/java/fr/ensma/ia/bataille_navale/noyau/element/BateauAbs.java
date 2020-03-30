@@ -90,6 +90,15 @@ public abstract class BateauAbs {
 	public EDirection getCap() {
 		return cap;
 	}
+
+	public int getPuissance() {
+		int out = 0;
+		for (ElementBateau el : elementsBateau) {
+			if (el.getEtatCourant()==el.getEtatIntact())
+				out++;
+		}
+		return out;
+	}
 	
 	
 	

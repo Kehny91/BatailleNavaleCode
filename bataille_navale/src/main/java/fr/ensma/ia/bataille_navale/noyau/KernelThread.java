@@ -4,10 +4,13 @@ import fr.ensma.ia.bataille_navale.ExceptionBadInput;
 import fr.ensma.ia.bataille_navale.ihm.TransitionScreen;
 import fr.ensma.ia.bataille_navale.ihm.agents.global.PresenterGlobal;
 import fr.ensma.ia.bataille_navale.ihm.agents.grille.PresenterGrille;
+import fr.ensma.ia.bataille_navale.noyau.fabrique.action.ActionFactory;
+import fr.ensma.ia.bataille_navale.noyau.fabrique.action.EAction;
 import fr.ensma.ia.bataille_navale.noyau.fabrique.bateau.BateauFactory;
 import fr.ensma.ia.bataille_navale.noyau.fabrique.bateau.EBateau;
 import fr.ensma.ia.bataille_navale.noyau.jeu.Case;
 import fr.ensma.ia.bataille_navale.noyau.jeu.IJoueur;
+import fr.ensma.ia.bataille_navale.outilsMultithread.Synchro;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -39,47 +42,39 @@ public class KernelThread extends Thread {
         j2.initialiseBateaux(presGlobalJ2);
         swapToJ1();
         while (true) {
-        	Case cible = null;
-        	try {
-				cible = presGlobalJ1.demandeUneCase("Donne moi une cible", j2.getGrille());
-				presGlobalJ1.clean();
-			} catch (ExceptionBadInput e) {
-				e.printStackTrace();
-			}
-        	
-        	cible.onMeTireDessus(1);
+        	boolean ok = false;
+        	while (!ok)
+        	{
+	        	try {
+	        		System.out.println(ActionFactory.createFactory(EAction.AttaqueCroix, presGlobalJ1, j1.getGrille(), j2.getGrille()).createAction().doAction());
+					ok = true;
+				} catch (ExceptionBadInput e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					//TIMEOUT
+				}
+        	}
         	swapToJ2();
-        	try {
-				cible = presGlobalJ2.demandeUneCase("Donne moi une cible", j1.getGrille());
-				presGlobalJ2.clean();
-			} catch (ExceptionBadInput e) {
-				e.printStackTrace();
-			}
-        	cible.onMeTireDessus(1);
+        	ok = false;
+        	while (!ok)
+        	{
+	        	try {
+					System.out.println(ActionFactory.createFactory(EAction.AttaqueCroix, presGlobalJ2, j2.getGrille(), j1.getGrille()).createAction().doAction());
+					ok = true;
+				} catch (ExceptionBadInput e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					//TIMEOUT
+				}
+        	}
         	swapToJ1();
         }
 	}
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	//Je les mets un peu plus bas parce qu'elles sont moches
 	private void swapToJ1() {
 		Platform.runLater(new Runnable(){
 
@@ -88,22 +83,22 @@ public class KernelThread extends Thread {
 				stage.setScene(j2Toj1Scene);
 			}
         	});
-		while (!((TransitionScreen)j2Toj1Scene.getRoot()).buttonPressed()) {
-			try {
-				sleep(10);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+		
+		try {
+			((TransitionScreen)j2Toj1Scene.getRoot()).waitUnlock();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
+		
 		Platform.runLater(new Runnable(){
-
+	
 			@Override
 			public void run() {
 				stage.setScene(sceneJ1);
 				presGlobalJ1.getPresGrilleMyBoats().updateAll();
 				presGlobalJ1.getPresGrilleEnnemy().updateAll();
 			}
-        	});
+	    	});
 		
 	}
 	
@@ -115,13 +110,14 @@ public class KernelThread extends Thread {
 				stage.setScene(j1Toj2Scene);
 			}
         	});
-		while (!((TransitionScreen)j1Toj2Scene.getRoot()).buttonPressed()) {
-			try {
-				sleep(10);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+		
+		Synchro s = new Synchro();
+		try {
+			((TransitionScreen)j1Toj2Scene.getRoot()).waitUnlock();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
+		
 		Platform.runLater(new Runnable(){
 
 			@Override

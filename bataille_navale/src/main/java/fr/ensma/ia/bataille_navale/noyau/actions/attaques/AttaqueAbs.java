@@ -1,5 +1,6 @@
 package fr.ensma.ia.bataille_navale.noyau.actions.attaques;
 
+import fr.ensma.ia.bataille_navale.noyau.element.BateauAbs;
 import fr.ensma.ia.bataille_navale.noyau.jeu.Case;
 
 public abstract class AttaqueAbs implements IAttaque {

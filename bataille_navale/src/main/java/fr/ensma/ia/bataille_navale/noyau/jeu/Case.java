@@ -151,6 +151,18 @@ public class Case {
 		}
 	}
 	
+	public Case rotate(Case pivot,boolean sensTrigo) throws ExceptionBadInput {
+		int newX=0,newY=0;
+		if (sensTrigo) {
+			newX = pivot.getX() - (getY() - pivot.getY());
+			newY = pivot.getY() + (getX() - pivot.getX());
+		} else {
+			newX = pivot.getX() + (getY() - pivot.getY());
+			newY = pivot.getY() - (getX() - pivot.getX());
+		}
+		return getGrille().getCase(newX, newY);
+	}
+	
 	public boolean isEmpty()
 	{
 		return placables.size() == 0;

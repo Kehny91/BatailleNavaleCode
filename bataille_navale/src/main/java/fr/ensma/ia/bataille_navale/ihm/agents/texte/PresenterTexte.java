@@ -1,6 +1,7 @@
 package fr.ensma.ia.bataille_navale.ihm.agents.texte;
 
 import fr.ensma.ia.bataille_navale.ihm.agents.ExceptionNoVueSet;
+import javafx.application.Platform;
 
 public class PresenterTexte {
 	private IVueTexte vue;
@@ -22,13 +23,27 @@ public class PresenterTexte {
 		if (vue==null)
 			throw new ExceptionNoVueSet();
 		model.setText(s);
-		vue.afficheText(s);
+		Platform.runLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				vue.afficheText(s);
+			}
+		});
+		
 	}
 	
 	public void clean() throws ExceptionNoVueSet {
 		if (vue==null)
 			throw new ExceptionNoVueSet();
 		model.setText("");
-		vue.clean();
+		Platform.runLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				vue.clean();
+			}
+		});
+		
 	}
 }

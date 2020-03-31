@@ -16,5 +16,5 @@ public interface IJoueur extends IGestionEtat{
 	void initialiseBateaux(IAsker asker);
 	int getNbTourAttente();
 	void setNbTourAttente(int nbTourAttente);
-	void finDeTour();
+	void finDeTour(boolean iHaveHitSomething);
 }

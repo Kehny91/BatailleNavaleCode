@@ -11,9 +11,15 @@ import fr.ensma.ia.bataille_navale.noyau.element.BateauAbs;
 import fr.ensma.ia.bataille_navale.noyau.element.ElementBateau;
 import fr.ensma.ia.bataille_navale.noyau.fabrique.action.EAction;
 import fr.ensma.ia.bataille_navale.noyau.jeu.Case;
+import fr.ensma.ia.bataille_navale.noyau.jeu.EDirection;
 import fr.ensma.ia.bataille_navale.noyau.jeu.Grille;
 import fr.ensma.ia.bataille_navale.noyau.jeu.IJoueur;
+import fr.ensma.ia.bataille_navale.observation.GenericObservable;
+import fr.ensma.ia.bataille_navale.observation.IObservable;
+import fr.ensma.ia.bataille_navale.outilsMultithread.MDD;
+import fr.ensma.ia.bataille_navale.outilsMultithread.Synchro;
 import javafx.application.Platform;
+import javafx.scene.input.KeyCode;
 
 public class PresenterGlobal implements IAsker{
 	private PresenterTexte presTexteJoueur,presTexteConsigne,presTexteAide;
@@ -21,6 +27,8 @@ public class PresenterGlobal implements IAsker{
 	private PresenterAction presAction;
 	private IVueGlobal vue;
 	private IJoueur looker;
+	public GenericObservable keyUpObs,keyDownObs,keyLeftObs,keyRightObs,keyEnterObs;
+	public Synchro sEnter;
 
 	public PresenterTexte getPresTexteJoueur() {
 		return presTexteJoueur;
@@ -68,6 +76,14 @@ public class PresenterGlobal implements IAsker{
 		presGrilleMyBoats = new PresenterGrille(looker.getGrille(), looker, looker);
 		presGrilleEnnemy = new PresenterGrille(ennemy.getGrille(), looker, ennemy);
 		presAction = new PresenterAction();
+		
+		keyDownObs = new GenericObservable();
+		keyUpObs = new GenericObservable();
+		keyLeftObs = new GenericObservable();
+		keyRightObs = new GenericObservable();
+		keyEnterObs = new GenericObservable();
+		
+		sEnter = new Synchro();
 	}
 
 	@Override
@@ -90,11 +106,15 @@ public class PresenterGlobal implements IAsker{
 			}
 		});
 		
-		if (grille == looker.getGrille()) 
-			out = presGrilleMyBoats.demandeUneCase();
-		else 
-			out = presGrilleEnnemy.demandeUneCase();
-		
+		try {
+			if (grille == looker.getGrille()) 
+				out = presGrilleMyBoats.demandeUneCase();
+			else 
+				out = presGrilleEnnemy.demandeUneCase();
+		} catch(InterruptedException e) {
+			clean();
+			throw new InterruptedException();
+		}
 		Platform.runLater(new Runnable() {
 			
 			@Override
@@ -116,36 +136,27 @@ public class PresenterGlobal implements IAsker{
 	@Override
 	public BateauAbs demandeUnBateau(String string, Grille grille) throws ExceptionBadInput, InterruptedException {
 		BateauAbs out = null;
-		Platform.runLater(new Runnable() {
-			
-			@Override
-			public void run() {
-				try {
-					presTexteConsigne.setText(string);
-					presTexteAide.setText("Pour cela, veuillez cliquer sur l'un de vos bateau");
-				} catch (ExceptionNoVueSet e) {
-					e.printStackTrace();
-				}
-				
-			}
-		});
+		try {
+			presTexteConsigne.setText(string);
+			presTexteAide.setText("Pour cela, veuillez cliquer sur l'un de vos bateau");
+		} catch (ExceptionNoVueSet e1) {
+			e1.printStackTrace();
+		}
 		
-		out = presGrilleMyBoats.demandeUnBateau();
+		try {
+			out = presGrilleMyBoats.demandeUnBateau();}
+		catch (InterruptedException e) {
+			clean();
+			throw new InterruptedException();
+		}
 		
-		Platform.runLater(new Runnable() {
-			
-			@Override
-			public void run() {
-				try {
-					presTexteConsigne.clean();
-					presTexteAide.clean();
-				} catch (ExceptionNoVueSet e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-			}
-		});
+		try {
+			presTexteConsigne.clean();
+			presTexteAide.clean();
+		} catch (ExceptionNoVueSet e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		for (ElementBateau el : out.getElementsBateau()) {
 			presGrilleMyBoats.select(el.getCase());
@@ -158,10 +169,87 @@ public class PresenterGlobal implements IAsker{
 	public void clean() {
 		presGrilleEnnemy.clean();
 		presGrilleMyBoats.clean();
+		try {
+			presTexteAide.clean();
+			presTexteConsigne.clean();
+		} catch (ExceptionNoVueSet e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 	@Override
 	public EAction demandeAction() throws InterruptedException {
 		return presAction.demandeAction();
 	}
+
+	public void handleKey(KeyCode keycode) {
+		switch (keycode) {
+			case UP:
+				keyUpObs.notifyObservateurs();
+				break;
+			case DOWN:
+				keyDownObs.notifyObservateurs();
+				break;
+			case LEFT:
+				keyLeftObs.notifyObservateurs();
+				break;
+			case RIGHT:
+				keyRightObs.notifyObservateurs();
+				break;
+			case ENTER:
+			{
+				keyEnterObs.notifyObservateurs();
+				sEnter.unlock();
+			}
+			default:
+				;
+		}
+	}
+
+	@Override
+	public IObservable getObservableDirection(EDirection dir) {
+		switch (dir) {
+		case Nord:
+			return keyUpObs;
+		case Est:
+			return keyRightObs;
+		case Ouest:
+			return keyLeftObs;
+		case Sud:
+			return keyDownObs;
+		default:
+			return null;
+		}
+	}
+
+	@Override
+	public IObservable getObservableEnter() {
+		return keyEnterObs;
+	}
+
+	@Override
+	public void attendValidation() throws InterruptedException {
+		sEnter.waitUnlock();
+	}
+
+	@Override
+	public void afficheConsigne(String s) {
+		try {
+			presTexteConsigne.setText(s);
+		} catch (ExceptionNoVueSet e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void afficheAide(String s) {
+		try {
+			presTexteAide.setText(s);
+		} catch (ExceptionNoVueSet e) {
+			e.printStackTrace();
+		}
+	}
+
+
 }

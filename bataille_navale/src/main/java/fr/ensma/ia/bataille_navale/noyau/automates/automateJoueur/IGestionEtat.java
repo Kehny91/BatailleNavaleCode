@@ -5,8 +5,8 @@ public interface IGestionEtat {
 	IEtat getEtatPerdu();
 	IEtat getEtatGagne();
 	IEtat getEtatAttendAction();
-	IEtat getEtatAttendBateauSource();
 	IEtat getEtatAttendParametres();
-	IEtat getEtatRealisationAction();
+	IEtat getEtatExecution();
+	IEtat getEtatCourant();
 	void setEtatCourant(IEtat e);
 }

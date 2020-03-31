@@ -10,7 +10,7 @@ public class Explosion extends AttaqueAbs{
 
 
 	@Override
-	public int doAction() {
+	public Resultat doAction() {
 		Case hitHere = cible;
 		
 		tirSimpleSurCase(hitHere, 3);
@@ -135,7 +135,7 @@ public class Explosion extends AttaqueAbs{
 		
 		
 		
-		return 0;
+		return new Resultat();
 	}
 	
 }

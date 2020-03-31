@@ -21,7 +21,14 @@ public class AttendParametres extends AbsEtat {
 	
 	@Override
 	public void actionParametree() throws ExceptionBadState {
-		joueur.setEtatCourant(joueur.getEtatRealisationAction());
+		joueur.setEtatCourant(joueur.getEtatExecution());
 	}
+	
+	@Override
+	public void actionImpossible() throws ExceptionBadState {
+		joueur.setEtatCourant(joueur.getEtatAttendAction());
+	}
+	
+	
 
 }

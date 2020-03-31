@@ -10,10 +10,6 @@ public class AbsEtat implements IEtat{
 		this.joueur = joueur;
 	}
 
-	@Override
-	public void bateauChoisi() throws ExceptionBadState {
-		throw new ExceptionBadState("Je ne peux pas choisir de bateau dans cet état");
-	}
 
 	@Override
 	public void actionParametree() throws ExceptionBadState {
@@ -58,6 +54,12 @@ public class AbsEtat implements IEtat{
 	@Override
 	public void actionImpossible() throws ExceptionBadState {
 		throw new ExceptionBadState("Je ne peux pas faire cet action dans cet etat");
+	}
+
+
+	@Override
+	public void actionExecutee() throws ExceptionBadState {
+		throw new ExceptionBadState("Je ne peux pas executer cet action dans cet etat");
 	}
 
 	

@@ -22,16 +22,21 @@ public class AttaqueCroixFactory extends ActionFactory {
 
 	@Override
 	public IAction createAction() throws ExceptionBadInput, InterruptedException {
-		BateauAbs tireur = asker.demandeUnBateau("Selectionner le bateau tireur", grilleAttaquant);
-		if (!tireur.isPeutTirer() || tireur.getPuissance()==0)
-		{
+		try {
+			BateauAbs tireur = asker.demandeUnBateau("Selectionner le bateau tireur", grilleAttaquant);
+			if (!tireur.isPeutTirer() || tireur.getPuissance()==0)
+			{
+				asker.clean();
+				throw new ExceptionBadInput();
+			}
+			out.setPuissance(tireur.getPuissance());
+			Case cible = asker.demandeUneCase("Selectionner une case cible", grilleCible);
+			out.setCible(cible);
 			asker.clean();
-			throw new ExceptionBadInput();
+			return out;
+		} catch (InterruptedException e) {
+			asker.clean();
+			throw new InterruptedException();
 		}
-		out.setPuissance(tireur.getPuissance());
-		Case cible = asker.demandeUneCase("Selectionner une case cible", grilleCible);
-		out.setCible(cible);
-		asker.clean();
-		return out;
 	}
 }

@@ -4,99 +4,153 @@ import fr.ensma.ia.bataille_navale.ExceptionBadInput;
 import fr.ensma.ia.bataille_navale.ihm.TransitionScreen;
 import fr.ensma.ia.bataille_navale.ihm.agents.global.PresenterGlobal;
 import fr.ensma.ia.bataille_navale.ihm.agents.grille.PresenterGrille;
+import fr.ensma.ia.bataille_navale.noyau.actions.IAction;
+import fr.ensma.ia.bataille_navale.noyau.actions.attaques.EResultat;
+import fr.ensma.ia.bataille_navale.noyau.actions.attaques.Resultat;
+import fr.ensma.ia.bataille_navale.noyau.automates.ExceptionBadState;
 import fr.ensma.ia.bataille_navale.noyau.fabrique.action.ActionFactory;
 import fr.ensma.ia.bataille_navale.noyau.fabrique.action.EAction;
 import fr.ensma.ia.bataille_navale.noyau.fabrique.bateau.BateauFactory;
 import fr.ensma.ia.bataille_navale.noyau.fabrique.bateau.EBateau;
 import fr.ensma.ia.bataille_navale.noyau.jeu.Case;
 import fr.ensma.ia.bataille_navale.noyau.jeu.IJoueur;
+import fr.ensma.ia.bataille_navale.noyau.jeu.JoueurAbstrait;
 import fr.ensma.ia.bataille_navale.outilsMultithread.Synchro;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class KernelThread extends Thread {
-	private IJoueur j1,j2;
-	private PresenterGlobal presGlobalJ1,presGlobalJ2;
+	private IJoueur[] joueurs;
+	private PresenterGlobal[] presGlobals;
 	private Scene sceneJ1, sceneJ2;
 	private Stage stage;
 	private Scene j1Toj2Scene;
 	private Scene j2Toj1Scene;
+	private KernelThreadKillerThread watchdog;
 	
 	public KernelThread(IJoueur j1, PresenterGlobal presGlobalJ1, IJoueur j2, PresenterGlobal presGlobalJ2, Scene sceneJ1, Scene sceneJ2, Scene j1Toj2Scene, Scene j2Toj1Scene, Stage primaryStage) {
-		this.j1 = j1;
-		this.j2 = j2;
-		this.presGlobalJ1 = presGlobalJ1;
-		this.presGlobalJ2 = presGlobalJ2;
+		this.joueurs = new IJoueur[2];
+		this.joueurs[0] = j1;
+		this.joueurs[1] = j2;
+		
+		this.presGlobals = new PresenterGlobal[2];
+		this.presGlobals[0] = presGlobalJ1;
+		this.presGlobals[1] = presGlobalJ2;
+	
 		this.sceneJ1 =  sceneJ1;
 		this.sceneJ2 =  sceneJ2;
 		this.j1Toj2Scene = j1Toj2Scene;
 		this.j2Toj1Scene = j2Toj1Scene;
 		this.stage = primaryStage;
+		watchdog = new KernelThreadKillerThread(this, presGlobalJ1.getPresAction().boutonRetourObs);
 	}
 	
 	@Override
 	public void run() {
-        j1.initialiseBateaux(presGlobalJ1);
-        swapToJ2();
-        j2.initialiseBateaux(presGlobalJ2);
-        swapToJ1();
+		for (int i=0;i<2;i++) {
+			joueurs[i].initialiseBateaux(presGlobals[i]);
+			swapFrom(joueurs[i]);
+		}
+		
+		((JoueurAbstrait)joueurs[0]).setObservateurFailAdverse(((JoueurAbstrait)joueurs[1]).failObs);
+		((JoueurAbstrait)joueurs[0]).setObservateurSuccessAdverse(((JoueurAbstrait)joueurs[1]).successObs);
+		((JoueurAbstrait)joueurs[1]).setObservateurFailAdverse(((JoueurAbstrait)joueurs[0]).failObs);
+		((JoueurAbstrait)joueurs[1]).setObservateurSuccessAdverse(((JoueurAbstrait)joueurs[0]).successObs);
+		
+        watchdog.start();
+        
+        //J1 dans l'etat Attend action
         while (true) {
-        	boolean ok = false;
-        	while (!ok)
-        	{
-        		presGlobalJ1.getPresAction().setAvailable(j1.getActionDispo());
-        		
-	        	try {
-	        		EAction action = presGlobalJ1.demandeAction();
-	        		System.out.println(action.toString());
-	        		if (action == EAction.FinDeTour)
-	        			ok = true;
-	        		else
-	        		{
-	        			j1.setNbTourAttente(ActionFactory.createFactory(action, presGlobalJ1, j1.getGrille(), j2.getGrille()).createAction().doAction());
-	        		}
-				} catch (ExceptionBadInput e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (InterruptedException e) {
-					//TIMEOUT
-					ok = true;
-				}
+        	for (int j = 0; j<2; j++) {
+	        	watchdog.ping();
+	        	boolean iHaveHitSomething = false;
+	        	boolean ok = false;
+	        	try {joueurs[j].getEtatCourant().aTonTour();} catch (ExceptionBadState e1) {e1.printStackTrace();}
+	        	while (!ok)
+	        	{
+	        		presGlobals[j].getPresAction().setAvailable(joueurs[j].getActionDispo());
+	        		
+		        	try {
+		        		EAction action = presGlobals[j].demandeAction();
+		        		System.out.println(action.toString());
+		        		try {joueurs[j].getEtatCourant().actionChoisie();} catch (ExceptionBadState e1) {e1.printStackTrace();}
+		        		if (action == EAction.FinDeTour) {
+		        			try {
+		        				joueurs[j].getEtatCourant().actionParametree();
+		        				joueurs[j].getEtatCourant().actionExecutee();
+		        				joueurs[j].getEtatCourant().finDeTour();
+							} catch (ExceptionBadState e) {
+								e.printStackTrace();
+							}
+		        			ok = true;
+		        		}
+		        		else
+		        		{
+		        			IAction actionToDo = ActionFactory.createFactory(action, presGlobals[j], joueurs[j].getGrille(), lautre(joueurs[j]).getGrille()).createAction();
+		        			try {joueurs[j].getEtatCourant().actionParametree();} catch (ExceptionBadState e) {e.printStackTrace();}
+		        			Resultat res = actionToDo.doAction();
+		        			joueurs[j].setNbTourAttente(res.getPenalite());
+		        			if (res.getTypeResultat()!=EResultat.Plouf) {
+		        				iHaveHitSomething = true;
+		        			}
+		        			
+		        			try {joueurs[j].getEtatCourant().actionExecutee();} catch (ExceptionBadState e) {e.printStackTrace();}
+		        		}
+					} catch (ExceptionBadInput e) {
+						e.printStackTrace();
+						try {joueurs[j].getEtatCourant().actionImpossible();} catch (ExceptionBadState e1) {e1.printStackTrace();}
+					} catch (InterruptedException e) {
+						if (watchdog.itsTheEnd())
+						{
+							//TIMEOUT
+							ok = true;
+							try {joueurs[j].getEtatCourant().timeOut();} catch (ExceptionBadState e1) {e1.printStackTrace();}
+						}else {
+							//RETOUR
+							ok = false;
+							try {joueurs[j].getEtatCourant().annuler();} catch (ExceptionBadState e1) {e1.printStackTrace();}
+						}
+						
+					}
+	        	}
+	        	
+	        	joueurs[j].finDeTour(iHaveHitSomething); // Decremente les compteurs
+	        	watchdog.ping();
+	        	swapFrom(joueurs[j]);
         	}
-        	j1.finDeTour();
-        	swapToJ2();
-        	ok = false;
-        	while (!ok)
-        	{
-        		presGlobalJ2.getPresAction().setAvailable(j2.getActionDispo());
-	        	try {
-	        		EAction action = presGlobalJ2.demandeAction();
-	        		if (action == EAction.FinDeTour)
-	        			ok = true;
-	        		else
-	        		{
-	        			j2.setNbTourAttente(ActionFactory.createFactory(action, presGlobalJ2, j2.getGrille(), j1.getGrille()).createAction().doAction());
-	        		}
-				} catch (ExceptionBadInput e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (InterruptedException e) {
-					ok = true;
-					//TIMOUT
-				}
-        	}
-        	j2.finDeTour();
-        	swapToJ1();
         }
 	}
 	
 	
+	private IJoueur lautre(IJoueur joueur) {
+		if (joueur == joueurs[0])
+			return joueurs[1];
+		else
+			return joueurs[0];
+	}
+        
+	private IJoueur swapFrom(IJoueur joueur) {
+		if (joueur == joueurs[0]) {
+			try {
+				swapToJ2();
+			} catch (InterruptedException e) {
+				//TIMEOUT
+			}
+			return joueurs[1];
+		} else {
+			try {
+				swapToJ1();
+			} catch (InterruptedException e) {
+				// TIMEOUT
+			}
+			return joueurs[0];
+		}
+	}
 	
 	
-	
-	
-	private void swapToJ1() {
+	private void swapToJ1() throws InterruptedException {
+		boolean timeout = false;
 		Platform.runLater(new Runnable(){
 
 			@Override
@@ -108,22 +162,26 @@ public class KernelThread extends Thread {
 		try {
 			((TransitionScreen)j2Toj1Scene.getRoot()).waitUnlock();
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			timeout = true;
 		}
+
 		
 		Platform.runLater(new Runnable(){
 	
 			@Override
 			public void run() {
 				stage.setScene(sceneJ1);
-				presGlobalJ1.getPresGrilleMyBoats().updateAll();
-				presGlobalJ1.getPresGrilleEnnemy().updateAll();
+				presGlobals[0].getPresGrilleMyBoats().updateAll();
+				presGlobals[0].getPresGrilleEnnemy().updateAll();
 			}
 	    	});
+		if (timeout)
+			throw new InterruptedException();
 		
 	}
 	
-	private void swapToJ2() {
+	private void swapToJ2() throws InterruptedException {
+		boolean timeout = false;
 		Platform.runLater(new Runnable(){
 
 			@Override
@@ -131,11 +189,10 @@ public class KernelThread extends Thread {
 				stage.setScene(j1Toj2Scene);
 			}
         	});
-		
 		try {
-			((TransitionScreen)j1Toj2Scene.getRoot()).waitUnlock();
+		((TransitionScreen)j1Toj2Scene.getRoot()).waitUnlock();
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			timeout = true;
 		}
 		
 		Platform.runLater(new Runnable(){
@@ -143,9 +200,12 @@ public class KernelThread extends Thread {
 			@Override
 			public void run() {
 				stage.setScene(sceneJ2);
-				presGlobalJ2.getPresGrilleMyBoats().updateAll();
-				presGlobalJ2.getPresGrilleEnnemy().updateAll();
+				presGlobals[1].getPresGrilleMyBoats().updateAll();
+				presGlobals[1].getPresGrilleEnnemy().updateAll();
 			}
         	});
+		
+		if (timeout)
+			throw new InterruptedException();
 	}
 }

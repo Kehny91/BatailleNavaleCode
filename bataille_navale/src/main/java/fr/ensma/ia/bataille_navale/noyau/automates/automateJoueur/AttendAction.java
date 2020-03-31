@@ -11,7 +11,7 @@ public class AttendAction extends AbsEtat {
 	
 	@Override
 	public void actionChoisie() throws ExceptionBadState {
-		joueur.setEtatCourant(joueur.getEtatAttendBateauSource());
+		joueur.setEtatCourant(joueur.getEtatAttendParametres());
 	}
 	
 	@Override
@@ -22,6 +22,16 @@ public class AttendAction extends AbsEtat {
 	@Override
 	public void annuler() throws ExceptionBadState {
 		joueur.setEtatCourant(joueur.getEtatAttendAction());
+	}
+	
+	@Override
+	public void finDeTour() throws ExceptionBadState {
+		joueur.setEtatCourant(joueur.getEtatEndormi());
+	}
+	
+	@Override
+	public void victoire() throws ExceptionBadState {
+		joueur.setEtatCourant(joueur.getEtatGagne());
 	}
 
 }

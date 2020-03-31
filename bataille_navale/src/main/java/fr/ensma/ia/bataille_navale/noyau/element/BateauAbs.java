@@ -3,7 +3,10 @@ package fr.ensma.ia.bataille_navale.noyau.element;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.ensma.ia.bataille_navale.ExceptionBadInput;
+import fr.ensma.ia.bataille_navale.ExceptionPasDeBateauIci;
 import fr.ensma.ia.bataille_navale.noyau.actions.attaques.EResultat;
+import fr.ensma.ia.bataille_navale.noyau.jeu.Case;
 import fr.ensma.ia.bataille_navale.noyau.jeu.EDirection;
 import fr.ensma.ia.bataille_navale.noyau.jeu.IJoueur;
 
@@ -98,6 +101,76 @@ public abstract class BateauAbs {
 				out++;
 		}
 		return out;
+	}
+	
+	public boolean peutAvancer() {
+		for (ElementBateau el : elementsBateau) {
+			Case next = null;
+			try {
+				next = el.getCase().voisin(cap);
+			} catch (ExceptionBadInput e) {
+				//On est sorti du tableau
+				System.out.println("Sortie");
+				return false;
+			}
+			try {
+				if (next.getElementBateauSaufBombe().getBateauAbs() != this) {
+					System.out.println("Collision");
+					return false; //On est tombé sur un autre bateau
+				}
+			} catch (ExceptionPasDeBateauIci e) {
+				;//Parfait
+			}
+		}
+		return true;
+	}
+	
+	public boolean peutReculer() {
+		for (ElementBateau el : elementsBateau) {
+			Case next = null;
+			try {
+				next = el.getCase().voisin(EDirection.reverse(cap));
+			} catch (ExceptionBadInput e) {
+				//On est sorti du tableau
+				System.out.println("Sortie");
+				return false;
+			}
+			try {
+				if (next.getElementBateauSaufBombe().getBateauAbs() != this) {
+					System.out.println("Collision");
+					return false; //On est tombé sur un autre bateau
+				}
+			} catch (ExceptionPasDeBateauIci e) {
+				;//Parfait
+			}
+		}
+		return true;
+	}
+	
+	public boolean peutPivoter(Case pivot, boolean sensTrigo) {
+		for (ElementBateau el : elementsBateau) {
+			Case next = null;
+			try {
+				next = el.getCase().rotate(pivot, sensTrigo);
+			} catch (ExceptionBadInput e) {
+				//On est sorti du tableau
+				System.out.println("Sortie");
+				return false;
+			}
+			try {
+				if (next.getElementBateauSaufBombe().getBateauAbs() != this) {
+					System.out.println("Collision");
+					return false; //On est tombé sur un autre bateau
+				}
+			} catch (ExceptionPasDeBateauIci e) {
+				;//Parfait
+			}
+		}
+		return true;
+	}
+
+	public void setCap(EDirection cap) {
+		this.cap  = cap;
 	}
 	
 	

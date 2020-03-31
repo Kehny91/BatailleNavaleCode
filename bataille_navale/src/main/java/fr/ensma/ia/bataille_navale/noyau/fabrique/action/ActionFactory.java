@@ -19,9 +19,9 @@ public abstract class ActionFactory {
 		case Flare:
 			return null;
 		case Rotation:
-			return null;
+			return new RotationFactory(asker,grilleAttaquant);
 		case Translation:
-			return null;
+			return new TranslationFactory(asker, grilleAttaquant);
 		case Soins:
 			return null;
 		default:

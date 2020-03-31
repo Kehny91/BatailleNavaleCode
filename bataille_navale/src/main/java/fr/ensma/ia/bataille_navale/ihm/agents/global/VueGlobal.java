@@ -1,5 +1,6 @@
 package fr.ensma.ia.bataille_navale.ihm.agents.global;
 
+
 import fr.ensma.ia.bataille_navale.Parametres;
 import fr.ensma.ia.bataille_navale.ihm.agents.action.IVueAction;
 import fr.ensma.ia.bataille_navale.ihm.agents.action.VueAction;
@@ -7,20 +8,23 @@ import fr.ensma.ia.bataille_navale.ihm.agents.grille.IVueGrille;
 import fr.ensma.ia.bataille_navale.ihm.agents.grille.VueGrille;
 import fr.ensma.ia.bataille_navale.ihm.agents.texte.IVueTexte;
 import fr.ensma.ia.bataille_navale.ihm.agents.texte.VueTexte;
+import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.scene.Node;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 
-public class VueGlobal extends GridPane implements IVueGlobal{
+public class VueGlobal extends GridPane implements IVueGlobal, EventHandler<KeyEvent>{
 	private PresenterGlobal pres;
 	private IVueGrille vueGrilleMyBoats, vueGrilleEnnemy;
 	private IVueTexte vueTexteJoueur,vueTexteConsigne,vueTexteAide;
 	private IVueAction vueAction;
 	
 	public VueGlobal(PresenterGlobal pres) {
-		//this.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 		this.pres = pres;
 		
 		for (int i=0; i<7;i++)
@@ -49,6 +53,8 @@ public class VueGlobal extends GridPane implements IVueGlobal{
 		this.add((Node)vueGrilleMyBoats, 0, 4, 3, 16);
 		this.add((Node)vueGrilleEnnemy, 3, 4, 3, 16);
 		this.add((Node)vueAction,6,0,1,20);
+		
+		this.addEventFilter(KeyEvent.KEY_RELEASED, this);
 	}
 
 	@Override
@@ -79,5 +85,12 @@ public class VueGlobal extends GridPane implements IVueGlobal{
 	@Override
 	public IVueAction getVueAction() {
 		return vueAction;
+	}
+
+	@Override
+	public void handle(KeyEvent event) {
+		KeyCode keycode = event.getCode();
+		if (keycode == KeyCode.LEFT || keycode == KeyCode.RIGHT || keycode == KeyCode.UP || keycode == KeyCode.DOWN || keycode == KeyCode.ENTER)
+			pres.handleKey(keycode);
 	}
 }

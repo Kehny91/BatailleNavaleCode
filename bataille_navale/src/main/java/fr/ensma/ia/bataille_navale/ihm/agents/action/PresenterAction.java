@@ -3,20 +3,26 @@ package fr.ensma.ia.bataille_navale.ihm.agents.action;
 import java.util.List;
 
 import fr.ensma.ia.bataille_navale.noyau.fabrique.action.EAction;
+import fr.ensma.ia.bataille_navale.observation.GenericObservable;
 import fr.ensma.ia.bataille_navale.outilsMultithread.MDD;
 
 public class PresenterAction {
 	MDD<EAction> actionChoisie;
 	ModeleAction model;
 	IVueAction vue;
+	public GenericObservable boutonRetourObs;
 	
 	public PresenterAction() {
 		actionChoisie = new MDD<EAction>();
 		model = new ModeleAction();
+		boutonRetourObs = new GenericObservable();
 	}
 
 	public void handleChoix(EAction action) {
-		actionChoisie.pushValue(action);
+		if (action == EAction.Retour)
+			boutonRetourObs.notifyObservateurs();
+		else
+			actionChoisie.pushValue(action);
 	}
 	
 	public EAction demandeAction() throws InterruptedException {
@@ -39,6 +45,8 @@ public class PresenterAction {
 			{
 				setAvailable(action, false);
 				if (action == EAction.FinDeTour)
+					setAvailable(action,true);
+				if (action == EAction.Retour)
 					setAvailable(action,true);
 			}
 		}

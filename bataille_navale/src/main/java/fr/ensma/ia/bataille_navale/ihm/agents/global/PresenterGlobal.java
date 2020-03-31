@@ -4,10 +4,12 @@ import fr.ensma.ia.bataille_navale.ExceptionBadInput;
 import fr.ensma.ia.bataille_navale.ExceptionPasDeBateauIci;
 import fr.ensma.ia.bataille_navale.ihm.IAsker;
 import fr.ensma.ia.bataille_navale.ihm.agents.ExceptionNoVueSet;
+import fr.ensma.ia.bataille_navale.ihm.agents.action.PresenterAction;
 import fr.ensma.ia.bataille_navale.ihm.agents.grille.PresenterGrille;
 import fr.ensma.ia.bataille_navale.ihm.agents.texte.PresenterTexte;
 import fr.ensma.ia.bataille_navale.noyau.element.BateauAbs;
 import fr.ensma.ia.bataille_navale.noyau.element.ElementBateau;
+import fr.ensma.ia.bataille_navale.noyau.fabrique.action.EAction;
 import fr.ensma.ia.bataille_navale.noyau.jeu.Case;
 import fr.ensma.ia.bataille_navale.noyau.jeu.Grille;
 import fr.ensma.ia.bataille_navale.noyau.jeu.IJoueur;
@@ -16,6 +18,7 @@ import javafx.application.Platform;
 public class PresenterGlobal implements IAsker{
 	private PresenterTexte presTexteJoueur,presTexteConsigne,presTexteAide;
 	private PresenterGrille presGrilleMyBoats,presGrilleEnnemy;
+	private PresenterAction presAction;
 	private IVueGlobal vue;
 	private IJoueur looker;
 
@@ -39,6 +42,10 @@ public class PresenterGlobal implements IAsker{
 		return presGrilleEnnemy;
 	}
 	
+	public PresenterAction getPresAction() {
+		return presAction;
+	}
+	
 	public IVueGlobal getVue() {
 		return vue;
 	}
@@ -50,6 +57,7 @@ public class PresenterGlobal implements IAsker{
 		presTexteAide.setVue(vue.getVueTexteAide());
 		presGrilleMyBoats.setVue(vue.getVueGrilleMyBoats());
 		presGrilleEnnemy.setVue(vue.getVueGrilleEnnemy());
+		presAction.setVue(vue.getVueAction());
 	}
 
 	public PresenterGlobal(IJoueur looker, IJoueur ennemy) {
@@ -59,6 +67,7 @@ public class PresenterGlobal implements IAsker{
 		presTexteAide = new PresenterTexte();
 		presGrilleMyBoats = new PresenterGrille(looker.getGrille(), looker, looker);
 		presGrilleEnnemy = new PresenterGrille(ennemy.getGrille(), looker, ennemy);
+		presAction = new PresenterAction();
 	}
 
 	@Override
@@ -82,9 +91,9 @@ public class PresenterGlobal implements IAsker{
 		});
 		
 		if (grille == looker.getGrille()) 
-			out = presGrilleMyBoats.demandeUneCase(null, grille);
+			out = presGrilleMyBoats.demandeUneCase();
 		else 
-			out = presGrilleEnnemy.demandeUneCase(null, grille);
+			out = presGrilleEnnemy.demandeUneCase();
 		
 		Platform.runLater(new Runnable() {
 			
@@ -121,7 +130,7 @@ public class PresenterGlobal implements IAsker{
 			}
 		});
 		
-		out = presGrilleMyBoats.demandeUnBateau(null,grille);
+		out = presGrilleMyBoats.demandeUnBateau();
 		
 		Platform.runLater(new Runnable() {
 			
@@ -149,5 +158,10 @@ public class PresenterGlobal implements IAsker{
 	public void clean() {
 		presGrilleEnnemy.clean();
 		presGrilleMyBoats.clean();
+	}
+
+	@Override
+	public EAction demandeAction() throws InterruptedException {
+		return presAction.demandeAction();
 	}
 }

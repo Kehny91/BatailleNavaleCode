@@ -22,13 +22,13 @@ public class AttaqueSimpleFactory extends ActionFactory {
 
 	@Override
 	public IAction createAction() throws ExceptionBadInput, InterruptedException {
-		BateauAbs tireur = asker.demandeUnBateau("Selectionner le bateau tireur", null); //TODO MY GRILLE
+		BateauAbs tireur = asker.demandeUnBateau("Selectionner le bateau tireur", grilleAttaquant);
 		if (!tireur.isPeutTirer() || tireur.getPuissance()==0) {
 			asker.clean();
 			throw new ExceptionBadInput();
 		}
 		out.setPuissance(tireur.getPuissance());
-		Case cible = asker.demandeUneCase("Selectionner une case cible", null); //TODO HIS GRILLE
+		Case cible = asker.demandeUneCase("Selectionner une case cible", grilleCible);
 		out.setCible(cible);
 		asker.clean();
 		return out;

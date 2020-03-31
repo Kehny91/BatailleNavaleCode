@@ -1,6 +1,8 @@
 package fr.ensma.ia.bataille_navale.ihm.agents.global;
 
 import fr.ensma.ia.bataille_navale.Parametres;
+import fr.ensma.ia.bataille_navale.ihm.agents.action.IVueAction;
+import fr.ensma.ia.bataille_navale.ihm.agents.action.VueAction;
 import fr.ensma.ia.bataille_navale.ihm.agents.grille.IVueGrille;
 import fr.ensma.ia.bataille_navale.ihm.agents.grille.VueGrille;
 import fr.ensma.ia.bataille_navale.ihm.agents.texte.IVueTexte;
@@ -15,7 +17,7 @@ public class VueGlobal extends GridPane implements IVueGlobal{
 	private PresenterGlobal pres;
 	private IVueGrille vueGrilleMyBoats, vueGrilleEnnemy;
 	private IVueTexte vueTexteJoueur,vueTexteConsigne,vueTexteAide;
-	private GridPane vueControls;
+	private IVueAction vueAction;
 	
 	public VueGlobal(PresenterGlobal pres) {
 		//this.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
@@ -39,33 +41,14 @@ public class VueGlobal extends GridPane implements IVueGlobal{
 		vueTexteAide = new VueTexte(pres.getPresTexteAide());
 		vueGrilleMyBoats = new VueGrille(pres.getPresGrilleMyBoats());
 		vueGrilleEnnemy = new VueGrille(pres.getPresGrilleEnnemy());
-		vueControls = new GridPane();
-		
-		//GridPane.setHgrow((Node) vueTexteJoueur, Priority.ALWAYS);
-		//GridPane.setVgrow((Node) vueTexteJoueur, Priority.ALWAYS);
-		
-		//GridPane.setHgrow((Node) vueTexteConsigne, Priority.ALWAYS);
-		//GridPane.setVgrow((Node) vueTexteConsigne, Priority.ALWAYS);
-		
-		//GridPane.setHgrow((Node) vueTexteAide, Priority.ALWAYS);
-		//GridPane.setVgrow((Node) vueTexteAide, Priority.ALWAYS);
-		
-		//GridPane.setHgrow((Node) vueGrilleMyBoats, Priority.ALWAYS);
-		//GridPane.setVgrow((Node) vueGrilleMyBoats, Priority.ALWAYS);
-		
-		//GridPane.setHgrow((Node) vueGrilleEnnemy, Priority.ALWAYS);
-		//GridPane.setVgrow((Node) vueGrilleEnnemy, Priority.ALWAYS);
-		
-		//GridPane.setHgrow((Node) vueControls, Priority.ALWAYS);
-		//GridPane.setVgrow((Node) vueControls, Priority.ALWAYS);
-		
+		vueAction = new VueAction(pres.getPresAction());
 		
 		this.add((Node)vueTexteJoueur, 0, 0, 1, 1);
 		this.add((Node)vueTexteConsigne, 1, 0, 5, 1);
 		this.add((Node)vueTexteAide, 0, 1, 6, 3);
 		this.add((Node)vueGrilleMyBoats, 0, 4, 3, 16);
 		this.add((Node)vueGrilleEnnemy, 3, 4, 3, 16);
-		this.add(vueControls,6,0,1,20);
+		this.add((Node)vueAction,6,0,1,20);
 	}
 
 	@Override
@@ -91,5 +74,10 @@ public class VueGlobal extends GridPane implements IVueGlobal{
 	@Override
 	public IVueTexte getVueTexteAide() {
 		return vueTexteAide;
+	}
+
+	@Override
+	public IVueAction getVueAction() {
+		return vueAction;
 	}
 }

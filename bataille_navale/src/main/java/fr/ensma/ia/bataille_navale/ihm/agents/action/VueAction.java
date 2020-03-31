@@ -4,8 +4,10 @@ import fr.ensma.ia.bataille_navale.noyau.fabrique.action.EAction;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
+import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 class ButtonForAction extends Button{
@@ -14,6 +16,7 @@ class ButtonForAction extends Button{
 	public ButtonForAction(final PresenterAction pres, EAction action, String affichage) {
 		super(affichage);
 		this.action = action;
+		this.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 		setOnAction(new EventHandler<ActionEvent>() {
 			
 			@Override
@@ -36,6 +39,8 @@ public class VueAction extends VBox implements IVueAction{
 		for (EAction action : EAction.values()) {
 			if (action!=EAction.Explosion) {
 				buttons[i] = new ButtonForAction(pres, action, action.toString());
+				VBox.setVgrow(buttons[i], Priority.SOMETIMES);
+				VBox.setMargin(buttons[i], new Insets(5));
 				this.getChildren().add(buttons[i]);
 				i++;
 			}

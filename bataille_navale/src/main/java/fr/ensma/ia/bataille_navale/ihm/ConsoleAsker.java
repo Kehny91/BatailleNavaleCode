@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 import fr.ensma.ia.bataille_navale.ExceptionBadInput;
 import fr.ensma.ia.bataille_navale.noyau.element.BateauAbs;
+import fr.ensma.ia.bataille_navale.noyau.fabrique.action.EAction;
 import fr.ensma.ia.bataille_navale.noyau.jeu.Case;
 import fr.ensma.ia.bataille_navale.noyau.jeu.Grille;
 
@@ -29,6 +30,12 @@ public class ConsoleAsker implements IAsker {
 	@Override
 	public void clean() {
 		System.out.println("cleaned");
+	}
+
+	@Override
+	public EAction demandeAction() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

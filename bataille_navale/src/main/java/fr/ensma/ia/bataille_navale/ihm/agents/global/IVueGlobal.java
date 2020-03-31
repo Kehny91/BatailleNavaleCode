@@ -1,5 +1,6 @@
 package fr.ensma.ia.bataille_navale.ihm.agents.global;
 
+import fr.ensma.ia.bataille_navale.ihm.agents.action.IVueAction;
 import fr.ensma.ia.bataille_navale.ihm.agents.grille.IVueGrille;
 import fr.ensma.ia.bataille_navale.ihm.agents.texte.IVueTexte;
 
@@ -9,4 +10,5 @@ public interface IVueGlobal {
 	IVueTexte getVueTexteJoueur();
 	IVueTexte getVueTexteConsigne();
 	IVueTexte getVueTexteAide();
+	IVueAction getVueAction();
 }

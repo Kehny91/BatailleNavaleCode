@@ -45,33 +45,54 @@ public class KernelThread extends Thread {
         	boolean ok = false;
         	while (!ok)
         	{
+        		presGlobalJ1.getPresAction().setAvailable(j1.getActionDispo());
+        		
 	        	try {
-	        		System.out.println(ActionFactory.createFactory(EAction.AttaqueCroix, presGlobalJ1, j1.getGrille(), j2.getGrille()).createAction().doAction());
-					ok = true;
+	        		EAction action = presGlobalJ1.demandeAction();
+	        		System.out.println(action.toString());
+	        		if (action == EAction.FinDeTour)
+	        			ok = true;
+	        		else
+	        		{
+	        			j1.setNbTourAttente(ActionFactory.createFactory(action, presGlobalJ1, j1.getGrille(), j2.getGrille()).createAction().doAction());
+	        		}
 				} catch (ExceptionBadInput e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (InterruptedException e) {
 					//TIMEOUT
+					ok = true;
 				}
         	}
+        	j1.finDeTour();
         	swapToJ2();
         	ok = false;
         	while (!ok)
         	{
+        		presGlobalJ2.getPresAction().setAvailable(j2.getActionDispo());
 	        	try {
-					System.out.println(ActionFactory.createFactory(EAction.AttaqueCroix, presGlobalJ2, j2.getGrille(), j1.getGrille()).createAction().doAction());
-					ok = true;
+	        		EAction action = presGlobalJ2.demandeAction();
+	        		if (action == EAction.FinDeTour)
+	        			ok = true;
+	        		else
+	        		{
+	        			j2.setNbTourAttente(ActionFactory.createFactory(action, presGlobalJ2, j2.getGrille(), j1.getGrille()).createAction().doAction());
+	        		}
 				} catch (ExceptionBadInput e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (InterruptedException e) {
-					//TIMEOUT
+					ok = true;
+					//TIMOUT
 				}
         	}
+        	j2.finDeTour();
         	swapToJ1();
         }
 	}
+	
+	
+	
 	
 	
 	
@@ -111,7 +132,6 @@ public class KernelThread extends Thread {
 			}
         	});
 		
-		Synchro s = new Synchro();
 		try {
 			((TransitionScreen)j1Toj2Scene.getRoot()).waitUnlock();
 		} catch (InterruptedException e) {

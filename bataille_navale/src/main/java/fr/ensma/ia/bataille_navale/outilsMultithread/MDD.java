@@ -29,7 +29,9 @@ public class MDD<T> {
 		T out = data;
 		data = null;
 		
+		enAttente = false;
 		protectionData.release();
+		
 		return out;
 	}
 	
@@ -44,6 +46,7 @@ public class MDD<T> {
 		data = value;
 		if (enAttente)
 			containsData.release();
+			
 		protectionData.release();
 	}
 }

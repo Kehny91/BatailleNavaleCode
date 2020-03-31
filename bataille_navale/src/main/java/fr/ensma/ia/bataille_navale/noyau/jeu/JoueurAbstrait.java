@@ -10,6 +10,7 @@ import fr.ensma.ia.bataille_navale.noyau.actions.IAction;
 import fr.ensma.ia.bataille_navale.observation.GenericObservable;
 import fr.ensma.ia.bataille_navale.noyau.automates.automateJoueur.*;
 import fr.ensma.ia.bataille_navale.noyau.element.BateauAbs;
+import fr.ensma.ia.bataille_navale.noyau.fabrique.action.EAction;
 import fr.ensma.ia.bataille_navale.noyau.fabrique.bateau.BateauFactory;
 import fr.ensma.ia.bataille_navale.noyau.fabrique.bateau.EBateau;
 
@@ -30,6 +31,9 @@ public abstract class JoueurAbstrait implements IJoueur{
 	private IEtat etatCourant;
 
 	private GenericObservable stateChanged;
+	
+	//< === DATA ===>
+	private int nbTourAttente;
 	
 	//< === METHODES === >
 	
@@ -74,9 +78,23 @@ public abstract class JoueurAbstrait implements IJoueur{
 	}
 
 	@Override
-	public List<IAction> getActionDispo() {
-		// TODO Auto-generated method stub
-		return null;
+	public List<EAction> getActionDispo() {
+		if (getNbTourAttente()>0) {
+			return new ArrayList<EAction>();
+		} else {
+			int nbDeBateauPouvantTirer = 0;
+			for (BateauAbs bateau : getBateaux())
+			{
+				if (bateau.isPeutTirer())
+					nbDeBateauPouvantTirer++;
+			}
+			ArrayList<EAction> out = new ArrayList<EAction>();
+			if (nbDeBateauPouvantTirer>0) {
+				out.add(EAction.AttaqueSimple);
+				out.add(EAction.AttaqueCroix);
+			}
+			return out;
+		}
 	}
 	
 	@Override
@@ -121,6 +139,21 @@ public abstract class JoueurAbstrait implements IJoueur{
 	public Grille getGrille()
 	{
 		return myGrid;
+	}
+	
+	@Override
+	public int getNbTourAttente() {
+		return nbTourAttente;
+	}
+	
+	@Override
+	public void finDeTour() {
+		nbTourAttente = Math.max(0, nbTourAttente-1);
+	}
+
+	@Override
+	public void setNbTourAttente(int nbTourAttente) {
+		this.nbTourAttente = nbTourAttente;
 	}
 
 	public JoueurAbstrait() {

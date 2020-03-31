@@ -18,7 +18,7 @@ import fr.ensma.ia.bataille_navale.noyau.jeu.IJoueur;
 import fr.ensma.ia.bataille_navale.observation.IObservateur;
 import fr.ensma.ia.bataille_navale.outilsMultithread.MDD;
 
-public class PresenterGrille implements IAsker{
+public class PresenterGrille{
 	private IVueGrille vue;
 	private List<PresenterCase> presenters;
 	private List<IObservateur> observateurs; //Observe si les cases sont cliquées
@@ -49,6 +49,7 @@ public class PresenterGrille implements IAsker{
 						@Override
 						public void doOnNotification() {
 							lastCelluleClicked.pushValue(maCase);
+							
 						}
 					};
 					currentPresentationCase.onMaClicke.addObservateur(observateurDeCetteCase);
@@ -89,22 +90,18 @@ public class PresenterGrille implements IAsker{
 	
 	public IVueGrille getVue() {return vue;}
 
-	@Override
-	public Case demandeUneCase(String string, Grille grille) throws ExceptionBadInput, InterruptedException {
-		if (string!=null)
-			System.out.println(string);
+	public Case demandeUneCase() throws ExceptionBadInput, InterruptedException {
 		Case cell = lastCelluleClicked.waitNewValue();
 		findPresenter(cell).select();
 		caseSelectionnee.add(findPresenter(cell));
 		return cell;
 	}
 
-	@Override
-	public BateauAbs demandeUnBateau(String string, Grille grille) throws ExceptionBadInput, InterruptedException {
+	public BateauAbs demandeUnBateau() throws ExceptionBadInput, InterruptedException {
 		BateauAbs out = null;
 		boolean ok = false;
 		while (!ok) {
-			Case select = demandeUneCase(null, grille);
+			Case select = demandeUneCase();
 			try {
 				out = select.getElementBateauSaufBombe().getBateauAbs();
 				ok = true;
@@ -130,7 +127,6 @@ public class PresenterGrille implements IAsker{
 		caseSelectionnee.add(findPresenter(cellule));
 	}
 
-	@Override
 	public void clean() {
 		for (PresenterCase pres : caseSelectionnee) {
 			pres.unselect();

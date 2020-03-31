@@ -24,7 +24,6 @@ public class PresenterCase implements IObservateur{
 	
 	public void handleClick()
 	{
-		System.out.println("Click sur une case du joueur " + looker.toString());
 		onMaClicke.notifyObservateurs();
 	}
 	

@@ -17,13 +17,13 @@ public abstract class ActionFactory {
 		case Explosion:
 			return null;
 		case Flare:
-			return null;
+			return new FlareFactory(asker,grilleAttaquant,grilleCible);
 		case Rotation:
 			return new RotationFactory(asker,grilleAttaquant);
 		case Translation:
 			return new TranslationFactory(asker, grilleAttaquant);
 		case Soins:
-			return null;
+			return new SoinFactory(asker,grilleAttaquant);
 		default:
 			return null;
 		}

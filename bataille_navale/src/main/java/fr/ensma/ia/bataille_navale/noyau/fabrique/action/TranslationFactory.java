@@ -64,7 +64,7 @@ public class TranslationFactory extends ActionFactory{
 			asker.getObservableDirection(cap).removeObservateur(observeCap);
 			asker.getObservableDirection(EDirection.reverse(cap)).addObservateur(observeReverseCap);
 			asker.clean();
-			out.setNbDeCase(Math.max(-1*bateauADep.getElementsBateau().get(0).getNiveauDef0(),Math.min(bateauADep.getElementsBateau().get(0).getNiveauDef0(), out.getNbDeCase())));
+			out.setNbDeCase(Math.max(-1*bateauADep.getResistance(),Math.min(bateauADep.getResistance(), out.getNbDeCase())));
 			return out;
 		} catch (InterruptedException e) {
 			asker.clean();

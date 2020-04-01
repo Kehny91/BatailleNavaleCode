@@ -6,8 +6,8 @@ import fr.ensma.ia.bataille_navale.noyau.fabrique.bateau.BateauFactory;
 
 public class JoueurHumain extends JoueurAbstrait {
 
-	public JoueurHumain() {
-		super();
+	public JoueurHumain(String name) {
+		super(name);
 	}
 
 }

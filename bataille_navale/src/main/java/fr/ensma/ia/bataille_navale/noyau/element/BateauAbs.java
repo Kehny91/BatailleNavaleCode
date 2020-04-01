@@ -6,6 +6,7 @@ import java.util.List;
 import fr.ensma.ia.bataille_navale.ExceptionBadInput;
 import fr.ensma.ia.bataille_navale.ExceptionPasDeBateauIci;
 import fr.ensma.ia.bataille_navale.noyau.actions.attaques.EResultat;
+import fr.ensma.ia.bataille_navale.noyau.automates.ExceptionBadState;
 import fr.ensma.ia.bataille_navale.noyau.jeu.Case;
 import fr.ensma.ia.bataille_navale.noyau.jeu.EDirection;
 import fr.ensma.ia.bataille_navale.noyau.jeu.IJoueur;
@@ -59,15 +60,35 @@ public abstract class BateauAbs {
 		}
 		return false;
 	}
+	
+	public void soigner() {
+		for (ElementBateau el : elementsBateau) {
+			if (el.getEtatCourant()!=el.getEtatDetruit()) {
+				try {
+					el.getEtatCourant().estAttaque(-1);
+					el.setNiveauDef(el.getNiveauDef()+1);
+				} catch (ExceptionBadState e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	/*
+	 * Hypothese, la resistance est le nb de case encore en vie
+	 */
+	public int getResistance() {
+		int out = 0;
+		for (ElementBateau el : elementsBateau) {
+			if (el.getEtatCourant()!=el.getEtatDetruit())
+				out ++;
+		}
+		return out;
+	}
+	
 
 	public boolean isPeutTirer() {
-		boolean aAssezDeVie = false;
-		
-		for (ElementBateau el : elementsBateau) {
-			if (el.getEtatCourant()==el.getEtatIntact())
-				aAssezDeVie = true;
-		}
-		return peutTirer && aAssezDeVie;
+		return peutTirer && getPuissance()>0;
 	}
 
 	public void setPeutTirer(boolean peutTirer) {

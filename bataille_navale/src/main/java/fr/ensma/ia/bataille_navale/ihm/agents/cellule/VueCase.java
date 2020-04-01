@@ -75,6 +75,13 @@ public class VueCase extends HBox implements IVueCase, EventHandler<MouseEvent> 
 			graphicContext.setFont(new Font(height/2));
 			graphicContext.strokeText(String.valueOf(def), width/3, height*2/3, width/3);
 		}
+		if (def>totalDef)
+		{
+			graphicContext.setStroke(Color.GREEN);
+			graphicContext.setLineWidth(2);
+			graphicContext.setFont(new Font(height/2));
+			graphicContext.strokeText(String.valueOf(def), width/3, height*2/3, width/3);
+		}
 		blitBorder();
 	}
 	
@@ -182,6 +189,19 @@ public class VueCase extends HBox implements IVueCase, EventHandler<MouseEvent> 
 	public void blitPlouf() {
 		graphicContext.setFill(Color.SNOW);
 		graphicContext.fillRoundRect(getWidth()*2/5, getHeight()*2/5, getWidth()/5, getHeight()/5, 2, 2);
+		blitBorder();
+	}
+
+	@Override
+	public void blitBombe() {
+		int width = (int) getWidth();
+		int height = (int) getHeight();
+		graphicContext.setFill(Color.BLACK);
+		graphicContext.fillRect(width/4, height/4, width/2, height/2);
+		graphicContext.setStroke(Color.RED);
+		graphicContext.setLineWidth(5);
+		graphicContext.strokeLine(width/4, height/4, width*3/4, height*3/4);
+		graphicContext.strokeLine(width/4, height*3/4, width*3/4, height/4);
 		blitBorder();
 	}
 

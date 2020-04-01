@@ -12,5 +12,6 @@ public class Detruit extends AbsEtat {
 	@Override
 	public void estAttaque(int puiss) throws ExceptionBadState {
 		/* I don't care, I'm already dead */
+		//On ne soigne pas une case détruite
 	}
 }

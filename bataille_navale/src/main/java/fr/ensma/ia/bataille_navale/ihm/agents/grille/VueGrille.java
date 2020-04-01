@@ -45,7 +45,7 @@ public class VueGrille extends GridPane implements IVueGrille {
 		//Le cast n'est pas beau, mais j'ai pas trop le choix si je veux garder un couplage faible avec la vue (patern facade)
 		//GridPane.setHgrow((Node)vue, Priority.ALWAYS);
 		//GridPane.setVgrow((Node)vue, Priority.ALWAYS);
-		this.add((Node) vue, x, Parametres.hauteur-1-y);
+		this.add((Node) vue, x, Parametres.hauteur-1-y); 
 		vueCases.add(vue);
 	}
 }

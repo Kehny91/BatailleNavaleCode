@@ -1,13 +1,17 @@
 package fr.ensma.ia.bataille_navale.noyau.fabrique.bateau;
 
+import java.util.Random;
+
 import fr.ensma.ia.bataille_navale.ExceptionBadInput;
 import fr.ensma.ia.bataille_navale.ExceptionPasDeBateauIci;
+import fr.ensma.ia.bataille_navale.Parametres;
 import fr.ensma.ia.bataille_navale.ihm.IAsker;
 import fr.ensma.ia.bataille_navale.noyau.element.BateauAbs;
 import fr.ensma.ia.bataille_navale.noyau.element.ElementBateau;
 import fr.ensma.ia.bataille_navale.noyau.element.Plaisance;
 import fr.ensma.ia.bataille_navale.noyau.element.Torpilleur;
 import fr.ensma.ia.bataille_navale.noyau.jeu.Case;
+import fr.ensma.ia.bataille_navale.noyau.jeu.EDirection;
 import fr.ensma.ia.bataille_navale.noyau.jeu.IJoueur;
 
 public class PlaisanceFactory extends BateauFactory {
@@ -20,18 +24,35 @@ public class PlaisanceFactory extends BateauFactory {
 
 	@Override
 	public BateauAbs createBateau(IJoueur joueur) throws ExceptionBadInput {
+		boolean ok = false;
 		Case caseArriere = null;
-		try {
-			caseArriere = asker.demandeUneCase("Selectionner la case arrière du bateau de plaisance",joueur.getGrille());
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		}
 		Case caseDirection = null;
-		try {
-			caseDirection = asker.demandeUneCase("Selectionner la direction du bateau",joueur.getGrille());
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
+		while (!ok)
+		{
+			caseArriere = joueur.getGrille().getRandomCase();
+			try {
+				caseArriere.getElementBateauSaufBombe();
+				ok = false; //On aurait rien du trouver
+			} catch (ExceptionPasDeBateauIci e) {
+				//PArfait
+				ok = true;
+			}
 		}
+		
+		ok = false;
+		Random r = new Random();
+		while (!ok) {
+			EDirection dir = EDirection.values()[r.nextInt(4)];
+			try {
+				caseDirection = caseArriere.voisin(dir);
+				ok = true;
+			}catch(ExceptionBadInput e) {
+				ok = false;
+			}
+		}
+		
+		
+		
 		asker.clean();
 		
 		checkElementBateau(caseArriere, caseDirection, 1);

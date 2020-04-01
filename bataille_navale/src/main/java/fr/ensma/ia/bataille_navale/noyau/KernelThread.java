@@ -1,7 +1,11 @@
 package fr.ensma.ia.bataille_navale.noyau;
 
+import java.util.List;
+
 import fr.ensma.ia.bataille_navale.ExceptionBadInput;
+import fr.ensma.ia.bataille_navale.Parametres;
 import fr.ensma.ia.bataille_navale.ihm.TransitionScreen;
+import fr.ensma.ia.bataille_navale.ihm.VictoryScreen;
 import fr.ensma.ia.bataille_navale.ihm.agents.global.PresenterGlobal;
 import fr.ensma.ia.bataille_navale.ihm.agents.grille.PresenterGrille;
 import fr.ensma.ia.bataille_navale.noyau.actions.IAction;
@@ -15,6 +19,7 @@ import fr.ensma.ia.bataille_navale.noyau.fabrique.bateau.EBateau;
 import fr.ensma.ia.bataille_navale.noyau.jeu.Case;
 import fr.ensma.ia.bataille_navale.noyau.jeu.IJoueur;
 import fr.ensma.ia.bataille_navale.noyau.jeu.JoueurAbstrait;
+import fr.ensma.ia.bataille_navale.observation.GenericObservable;
 import fr.ensma.ia.bataille_navale.outilsMultithread.Synchro;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -28,6 +33,7 @@ public class KernelThread extends Thread {
 	private Scene j1Toj2Scene;
 	private Scene j2Toj1Scene;
 	private KernelThreadKillerThread watchdog;
+	static public GenericObservable finDeTourObs = new GenericObservable();
 	
 	public KernelThread(IJoueur j1, PresenterGlobal presGlobalJ1, IJoueur j2, PresenterGlobal presGlobalJ2, Scene sceneJ1, Scene sceneJ2, Scene j1Toj2Scene, Scene j2Toj1Scene, Stage primaryStage) {
 		this.joueurs = new IJoueur[2];
@@ -43,7 +49,7 @@ public class KernelThread extends Thread {
 		this.j1Toj2Scene = j1Toj2Scene;
 		this.j2Toj1Scene = j2Toj1Scene;
 		this.stage = primaryStage;
-		watchdog = new KernelThreadKillerThread(this, presGlobalJ1.getPresAction().boutonRetourObs);
+		watchdog = new KernelThreadKillerThread(this, presGlobalJ1.getPresAction().boutonRetourObs,presGlobalJ2.getPresAction().boutonRetourObs);
 	}
 	
 	@Override
@@ -52,11 +58,6 @@ public class KernelThread extends Thread {
 			joueurs[i].initialiseBateaux(presGlobals[i]);
 			swapFrom(joueurs[i]);
 		}
-		
-		((JoueurAbstrait)joueurs[0]).setObservateurFailAdverse(((JoueurAbstrait)joueurs[1]).failObs);
-		((JoueurAbstrait)joueurs[0]).setObservateurSuccessAdverse(((JoueurAbstrait)joueurs[1]).successObs);
-		((JoueurAbstrait)joueurs[1]).setObservateurFailAdverse(((JoueurAbstrait)joueurs[0]).failObs);
-		((JoueurAbstrait)joueurs[1]).setObservateurSuccessAdverse(((JoueurAbstrait)joueurs[0]).successObs);
 		
         watchdog.start();
         
@@ -69,10 +70,37 @@ public class KernelThread extends Thread {
 	        	try {joueurs[j].getEtatCourant().aTonTour();} catch (ExceptionBadState e1) {e1.printStackTrace();}
 	        	while (!ok)
 	        	{
-	        		presGlobals[j].getPresAction().setAvailable(joueurs[j].getActionDispo());
+	        		if(lautre(joueurs[j]).getNbBateauEnVie()==0) {
+	        			watchdog.kill();
+	        			try {
+							joueurs[j].getEtatCourant().victoire();
+							lautre(joueurs[j]).getEtatCourant().defaite();
+						} catch (ExceptionBadState e) {
+							e.printStackTrace();
+						}
+	        			System.out.println("VICTOIRE DE "+joueurs[j].getName());
+	        			final Scene sc = new Scene(new VictoryScreen(joueurs[j].getName()),Parametres.widthPix/2,Parametres.heightPix/2);
+	        			
+	        					
+	        			Platform.runLater(new Runnable(){
+	        				
+	        				@Override
+	        				public void run() {
+	        					stage.setScene(sc);
+	        				}
+	        		    	});
+	        			ok = true;
+	        		}
+	        		List<EAction> actionDispo = joueurs[j].getActionDispo();
+	        		presGlobals[j].getPresAction().setAvailable(actionDispo);
 	        		
 		        	try {
-		        		EAction action = presGlobals[j].demandeAction();
+		        		EAction action;
+		        		if (actionDispo.contains(EAction.Soins))
+		        			action = EAction.Soins;
+		        		else
+		        			action = presGlobals[j].demandeAction();
+		        		
 		        		System.out.println(action.toString());
 		        		try {joueurs[j].getEtatCourant().actionChoisie();} catch (ExceptionBadState e1) {e1.printStackTrace();}
 		        		if (action == EAction.FinDeTour) {
@@ -115,7 +143,11 @@ public class KernelThread extends Thread {
 					}
 	        	}
 	        	
-	        	joueurs[j].finDeTour(iHaveHitSomething); // Decremente les compteurs
+	        	//Petite interrogation ?
+	        	//Qu'est ce qu'un tour ?
+	        	//Quand les deux joueurs ont joués (grand tour)? Ou des que l'un des deux joue (petit Tour) ?
+	        	joueurs[j].finDeTour(iHaveHitSomething); // Fin d'un grand tour
+	        	finDeTourObs.notifyObservateurs(); //Fin d'un petit tour
 	        	watchdog.ping();
 	        	swapFrom(joueurs[j]);
         	}

@@ -1,5 +1,6 @@
 package fr.ensma.ia.bataille_navale.noyau;
 
+import fr.ensma.ia.bataille_navale.Parametres;
 import fr.ensma.ia.bataille_navale.observation.GenericObservable;
 import fr.ensma.ia.bataille_navale.observation.IObservateur;
 
@@ -10,20 +11,19 @@ public class KernelThreadKillerThread extends Thread implements IObservateur{
 	private KernelThread kernelThread;
 	private boolean stop;
 	private boolean theEnd;
-	private GenericObservable obsBoutonRetour;
 	
-	public KernelThreadKillerThread(final KernelThread kernelThread, final GenericObservable obsBoutonRetour) {
+	public KernelThreadKillerThread(final KernelThread kernelThread, final GenericObservable obsBoutonRetourJ1, final GenericObservable obsBoutonRetourJ2) {
 		this.kernelThread = kernelThread;
 		stop = false;
-		this.obsBoutonRetour = obsBoutonRetour;
-		obsBoutonRetour.addObservateur(this);
+		obsBoutonRetourJ1.addObservateur(this);
+		obsBoutonRetourJ2.addObservateur(this);
 	}
 	
 	@Override
 	public void run() {
 		while (!stop) {
 			try {
-				Thread.sleep(15000);
+				Thread.sleep(Parametres.nbDeSecondeTimeout*1000);
 				theEnd = true;
 				//J'ai pu dormir, je kill le kernel
 				kernelThread.interrupt();

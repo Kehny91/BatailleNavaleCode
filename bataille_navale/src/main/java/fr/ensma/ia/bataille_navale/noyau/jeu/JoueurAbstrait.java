@@ -11,6 +11,8 @@ import fr.ensma.ia.bataille_navale.observation.GenericObservable;
 import fr.ensma.ia.bataille_navale.observation.IObservateur;
 import fr.ensma.ia.bataille_navale.noyau.automates.automateJoueur.*;
 import fr.ensma.ia.bataille_navale.noyau.element.BateauAbs;
+import fr.ensma.ia.bataille_navale.noyau.element.Bombe;
+import fr.ensma.ia.bataille_navale.noyau.element.Plaisance;
 import fr.ensma.ia.bataille_navale.noyau.element.SousMarin;
 import fr.ensma.ia.bataille_navale.noyau.fabrique.action.EAction;
 import fr.ensma.ia.bataille_navale.noyau.fabrique.bateau.BateauFactory;
@@ -32,15 +34,14 @@ public abstract class JoueurAbstrait implements IJoueur{
 	private IEtat etatCourant;
 
 	private GenericObservable stateChanged;
-	public GenericObservable failObs;
-	public GenericObservable successObs;
 	
 	//< === DATA ===>
 	private int nbTourAttente;
-	private int nbDeFailsConsecutif;
-	private int nbDeFailsConsecutifAdverse;
-	private int nbSoinsDispo;
+	private int nbDeFailsConsecutifSoins;
+	private int nbDeFailsConsecutifFlare;
 	private int nbFlareDispo;
+	private boolean soinDispo;
+	private String name;
 	
 	//< === METHODES === >
 	
@@ -78,6 +79,19 @@ public abstract class JoueurAbstrait implements IJoueur{
 	public void setEtatCourant(IEtat e) {
 		etatCourant = e;
 	}
+	
+	/*
+	 * Sauf bombes et bateaux de plaisance
+	 */
+	@Override
+	public int getNbBateauEnVie() {
+		int out = 0;
+		for (BateauAbs b : bateaux) {
+			if (b.isEnVie() && b.getClass()!=Bombe.class && b.getClass()!=Plaisance.class)
+				out++;
+		}
+		return out;
+	}
 
 	@Override
 	public List<EAction> getActionDispo() {
@@ -106,9 +120,10 @@ public abstract class JoueurAbstrait implements IJoueur{
 				out.add(EAction.Translation);
 				out.add(EAction.Rotation);
 			}
-			if (nbDeBateauEnVie>0 && nbFlareDispo>0 && sousMarinPeutTirer)
+			if (nbDeBateauEnVie>0 && nbFlareDispo>0 && sousMarinPeutTirer) {
 				out.add(EAction.Flare);
-			if (nbSoinsDispo>0 && nbDeBateauEnVie>0) {
+			}
+			if (soinDispo && nbDeBateauEnVie>0) {
 				out.add(EAction.Soins);
 			}
 			return out;
@@ -132,25 +147,34 @@ public abstract class JoueurAbstrait implements IJoueur{
 		
 		for (EBateau e : EBateau.values())
 		{
-			if (e!=EBateau.Bombe)
+			
+			retry = true;
+			while (retry)
 			{
-				retry = true;
-				while (retry)
-				{
-					try {
-						System.out.println("Creation du bateau " + e.toString());
-						bf = BateauFactory.createFactory(e, asker);
-						bf.createBateau(this);
-						retry = false;
-						
-					} catch (ExceptionBadInput e1) {
-						e1.printStackTrace();
-						System.out.println("It failed, try again");
-						retry = true;
-					}
+				try {
+					System.out.println("Creation du bateau " + e.toString());
+					bf = BateauFactory.createFactory(e, asker);
+					bf.createBateau(this);
+					retry = false;
+					
+				} catch (ExceptionBadInput e1) {
+					e1.printStackTrace();
+					System.out.println("It failed, try again");
+					retry = true;
 				}
 			}
 		}
+		//Creation du voilier supplementaire
+		EBateau e = EBateau.Plaisance;
+		System.out.println("Creation du bateau " + e.toString());
+		try {
+			BateauFactory.createFactory(e, asker).createBateau(this);
+		} catch (ExceptionBadInput e1) {
+			e1.printStackTrace();
+			//Pas normal...
+		}
+		
+		
 
 	}
 	
@@ -168,14 +192,18 @@ public abstract class JoueurAbstrait implements IJoueur{
 	public void finDeTour(boolean hitSomething) {
 		nbTourAttente = Math.max(0, nbTourAttente-1);
 		if (hitSomething) {
-			successObs.notifyObservateurs();
-			nbDeFailsConsecutif = 0;
+			nbDeFailsConsecutifSoins = 0;
+			nbDeFailsConsecutifFlare = 0;
 		} else {
-			failObs.notifyObservateurs();
-			nbDeFailsConsecutif++;
-			if (nbDeFailsConsecutif>=4) {
-				nbDeFailsConsecutif=0;
+			nbDeFailsConsecutifFlare++;
+			nbDeFailsConsecutifSoins++;
+			if (nbDeFailsConsecutifFlare>=4) {
+				nbDeFailsConsecutifFlare=0;
 				nbFlareDispo++;
+			}
+			if (nbDeFailsConsecutifSoins>=3) {
+				nbDeFailsConsecutifSoins=0;
+				soinDispo = true;
 			}
 		}
 	}
@@ -190,31 +218,9 @@ public abstract class JoueurAbstrait implements IJoueur{
 		return etatCourant;
 	}
 	
-	public void setObservateurFailAdverse(GenericObservable failAdverse) {
-		failAdverse.addObservateur(new IObservateur() {
-			
-			@Override
-			public void doOnNotification() {
-				nbDeFailsConsecutifAdverse++;
-				if (nbDeFailsConsecutifAdverse==3) {
-					nbSoinsDispo++;
-					nbDeFailsConsecutifAdverse = 0;
-				}
-			}
-		});
-	}
-	
-	public void setObservateurSuccessAdverse(GenericObservable successAdverse) {
-		successAdverse.addObservateur(new IObservateur() {
-			
-			@Override
-			public void doOnNotification() {
-				nbDeFailsConsecutifAdverse = 0;
-			}
-		});
-	}
 
-	public JoueurAbstrait() {
+
+	public JoueurAbstrait(String name) {
 		super();
 		this.etatEndormi = new Endormi(this);
 		this.etatPerdu = new Perdu(this);
@@ -226,12 +232,26 @@ public abstract class JoueurAbstrait implements IJoueur{
 		this.stateChanged = new GenericObservable();
 		this.bateaux = new ArrayList<BateauAbs>();
 		myGrid = new Grille(Parametres.largeur,Parametres.hauteur);
-		nbDeFailsConsecutif = 0;
-		nbDeFailsConsecutifAdverse = 0;
-		failObs = new GenericObservable();
-		successObs = new GenericObservable();
-		nbSoinsDispo = 0;
+		nbDeFailsConsecutifSoins = 0;
+		nbDeFailsConsecutifFlare = 0;
+		soinDispo = false;
 		nbFlareDispo = 0;
+		this.name = name;
+	}
+	
+	@Override
+	public void useFlare() {
+		nbFlareDispo--;
+	}
+	
+	@Override
+	public void useSoin() {
+		soinDispo=false;
+	}
+	
+	@Override
+	public String getName() {
+		return name;
 	}
 	
 	

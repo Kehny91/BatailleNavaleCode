@@ -17,4 +17,8 @@ public interface IJoueur extends IGestionEtat{
 	int getNbTourAttente();
 	void setNbTourAttente(int nbTourAttente);
 	void finDeTour(boolean iHaveHitSomething);
+	void useFlare();
+	void useSoin();
+	int getNbBateauEnVie();
+	String getName();
 }

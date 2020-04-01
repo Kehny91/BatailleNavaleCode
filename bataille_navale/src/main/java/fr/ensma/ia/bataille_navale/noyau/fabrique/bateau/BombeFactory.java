@@ -1,6 +1,9 @@
 package fr.ensma.ia.bataille_navale.noyau.fabrique.bateau;
 
+import com.sun.javadoc.Parameter;
+
 import fr.ensma.ia.bataille_navale.ExceptionBadInput;
+import fr.ensma.ia.bataille_navale.Parametres;
 import fr.ensma.ia.bataille_navale.noyau.element.BateauAbs;
 import fr.ensma.ia.bataille_navale.noyau.element.Bombe;
 import fr.ensma.ia.bataille_navale.noyau.element.ElementBateau;
@@ -17,7 +20,9 @@ public class BombeFactory extends BateauFactory {
 		Case caseBombe = joueur.getGrille().getRandomCase();
 		
 		//Cas special car nbCases != def
-		caseBombe.addPlacable(new ElementBateau(3, out, caseBombe));
+		ElementBateau elBombe = new ElementBateau(3, out, caseBombe);
+		elBombe.setHidden(!Parametres.showBombe);
+		caseBombe.addPlacable(elBombe);
 		
 		joueur.ajouteBateau(out);
 		

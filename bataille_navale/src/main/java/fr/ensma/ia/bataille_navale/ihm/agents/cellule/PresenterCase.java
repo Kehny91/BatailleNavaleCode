@@ -42,10 +42,15 @@ public class PresenterCase implements IObservateur{
 				// Inexplicable
 				e.printStackTrace();
 			}
+		} else if (model.hasABombe() && model.isVisible()) {
+			vue.blitBombe();
 		}
 		else { //Pas de bateau affichable
 			if (model.getOwner()!=looker) {
-				vue.blitUnknown();
+				if (model.eclaireeParFlare())
+					vue.clean();
+				else
+					vue.blitUnknown();
 				if (model.getEnnemyHint()==EResultat.Plouf) {
 					vue.blitPlouf();
 				}else if (model.getEnnemyHint()==EResultat.Touche) {

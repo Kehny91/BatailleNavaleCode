@@ -180,7 +180,15 @@ public class PresenterGlobal implements IAsker{
 
 	@Override
 	public EAction demandeAction() throws InterruptedException {
-		return presAction.demandeAction();
+		try {
+			presTexteConsigne.setText("Choisissez une action");
+			presTexteAide.setText("Pour cela, appuiez sur l'un des boutons a droite");
+		} catch (ExceptionNoVueSet e) {
+			e.printStackTrace();
+		}
+		EAction out = presAction.demandeAction();
+		clean();
+		return out;
 	}
 
 	public void handleKey(KeyCode keycode) {

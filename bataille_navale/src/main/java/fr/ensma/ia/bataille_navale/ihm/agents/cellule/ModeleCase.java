@@ -13,7 +13,6 @@ import fr.ensma.ia.bataille_navale.noyau.jeu.IJoueur;
 public class ModeleCase {
 	private Case cellule;
 	private IJoueur looker;
-	private int nbTourVisible;
 	private boolean selected;
 	private IJoueur owner;
 	
@@ -22,7 +21,6 @@ public class ModeleCase {
 		this.cellule = cellule;
 		this.looker = looker;
 		this.owner = owner;
-		nbTourVisible = 0;
 	}
 	
 	public IJoueur getOwner() {
@@ -36,11 +34,24 @@ public class ModeleCase {
 	public boolean hasAShip()
 	{
 		try {
-			cellule.getElementBateau();
+			cellule.getElementBateauSaufBombe();
 		} catch (ExceptionPasDeBateauIci e) {
 			return false;
 		}
 		return true;
+	}
+	
+	public boolean hasABombe() {
+		try {
+			cellule.getElementBombe();
+			return true;
+		} catch (ExceptionPasDeBateauIci e) {
+			return false;
+		}
+	}
+	
+	public ElementBateau getElementBombe() throws ExceptionPasDeBateauIci {
+		return cellule.getElementBombe();
 	}
 	
 	public boolean connect(EDirection dir)
@@ -68,18 +79,30 @@ public class ModeleCase {
 		}
 	}
 	
-	public boolean isVisible()
+	public boolean isVisible() //On affiche en priorité les bateaux. Puis les bombes si elles sont configurées comme visible dans la class Parametres
 	{
-		ElementBateau e;
+		ElementBateau e = null;
 		try {
 			e = cellule.getElementBateauSaufBombe();
 		} catch (ExceptionPasDeBateauIci e1) {
-			return false;
+			try {
+				e = cellule.getElementBombe();
+			} catch (ExceptionPasDeBateauIci e2) {
+				return false;
+			}
 		}
+		if (e.isHidden())
+			return false;
+		
 		if (e.getBateauAbs().getOwner()==looker)
 			return true;
 		else
-			return nbTourVisible>0;
+			return cellule.getNbDeTourVisible()>0;
+	}
+	
+	public boolean eclaireeParFlare()
+	{
+		return cellule.getNbDeTourVisible()>0;
 	}
 	
 	public boolean bateauIsCoule()
@@ -104,12 +127,6 @@ public class ModeleCase {
 	public boolean isHead() throws ExceptionPasDeBateauIci
 	{
 		return cellule.getElementBateauSaufBombe().isHead();
-	}
-	
-	public void finDeTour()
-	{
-		if (nbTourVisible>0)
-			nbTourVisible--;
 	}
 
 

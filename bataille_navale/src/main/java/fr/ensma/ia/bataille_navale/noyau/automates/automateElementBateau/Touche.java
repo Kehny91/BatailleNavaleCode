@@ -14,5 +14,9 @@ public class Touche extends AbsEtat {
 		if (eBateau.getNiveauDef()-puiss<=0){
 			eBateau.setEtatCourant(eBateau.getEtatDetruit());
 		}
+		else if (eBateau.getNiveauDef()-puiss>=eBateau.getNiveauDef0())
+			eBateau.setEtatCourant(eBateau.getEtatIntact());
+		else
+			eBateau.setEtatCourant(eBateau.getEtatTouche());
 	}
 }

@@ -18,8 +18,10 @@ public class ElementBateau implements IGestionEtat, IPlacable{
 	private BateauAbs bateauAbs;
 	private Case caseImOn;
 	private boolean head;
+	private boolean hidden;
 	
 	public GenericObservable etatChanged;
+	
 	
 	
 	//Se rajoute aux elements bateau du bateau en question
@@ -39,6 +41,7 @@ public class ElementBateau implements IGestionEtat, IPlacable{
 		etatChanged = new GenericObservable();
 		bateauAbs.ajouteElementBateau(this);
 		head = false;
+		hidden = false;
 		//System.out.println("Nouvel element en "+ caseImOn.getX() +" "+caseImOn.getY());
 	}
 	
@@ -115,5 +118,13 @@ public class ElementBateau implements IGestionEtat, IPlacable{
 		} catch (ExceptionBadState e) {
 			e.printStackTrace();
 		}
+	}
+
+	public boolean isHidden() {
+		return hidden;
+	}
+	
+	public void setHidden(boolean hidden) {
+		this.hidden = hidden;
 	}
 }

@@ -13,4 +13,5 @@ public interface IVueCase {
 	void blitSelected();
 	void blitPlouf();
 	void blitDetruit();
+	void blitBombe();
 }
